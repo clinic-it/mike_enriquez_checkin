@@ -1,4 +1,4 @@
-= form_tag :checkins, :method => :post do
+= form_tag :checkins, :multipart => true, :method => :post do
   = text_field_tag :name, nil, {:placeholder => 'Name'}
   = label_tag :previous_day
   = file_field_tag :previous_day

@@ -1,6 +1,21 @@
 class CheckinsController < ApplicationController
 
   def create
+    @client = Slack::Web::Client.new
+
+    @project_hash = {
+      1874223 => 'Ernesto',
+      1978467 => 'General R&D',
+      1149382 => 'LSD-JB',
+      1977673 => 'FlightBot',
+      1435852 => 'LSD-LG',
+      97426 => 'LSD-BT',
+      1435854 => 'LSD-MAT',
+      1149370 => 'LSD-MBC',
+      1876729 => 'Amanda',
+      1143948 => 'Effie'
+    }
+
     @user = params[:name]
     @previous_day = params[:previous_day]
     @current_day = params[:current_day]
@@ -8,8 +23,8 @@ class CheckinsController < ApplicationController
     @current_date = Date.today
     @previous_date = @current_date.monday? ? (@current_date - 3) : Date.yesterday
 
-    previous_day = CSV.read(@previous_day, :headers => true).group_by{|task| task['Project Id']}
-    current_day = CSV.read(@current_day, :headers => true).group_by{|task| task['Project Id']}
+    previous_day = CSV.read(@previous_day.path, :headers => true).group_by{|task| task['Project Id']}
+    current_day = CSV.read(@current_day.path, :headers => true).group_by{|task| task['Project Id']}
 
     message_format = {
       :channel => @channel,
@@ -22,6 +37,8 @@ class CheckinsController < ApplicationController
     }
 
     @client.chat_postMessage message_format
+
+    redirect_to :root
   end
 
 
@@ -44,7 +61,7 @@ class CheckinsController < ApplicationController
       fields.push(
         :value =>
           if entry[0].nil?
-            file_to_process = previous_day ? @previous_day : @current_day
+            file_to_process = previous_day ? @previous_day.path : @current_day.path
             "*Work on #{file_to_process.split('_')[0]}*"
           else
             "*Work on #{@project_hash[entry[0].to_i]}*"

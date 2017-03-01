@@ -50,3 +50,5 @@ gem 'rails_12factor', group: :production
 gem 'haml'
 gem 'slack-ruby-client'
 gem 'figaro'
+
+ruby '2.2.1'
