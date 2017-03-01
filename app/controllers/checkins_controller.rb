@@ -1,4 +1,5 @@
 class CheckinsController < ApplicationController
+  require 'csv'
 
   def create
     @client = Slack::Web::Client.new
