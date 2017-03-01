@@ -1,9 +1,14 @@
 class CheckinsController < ApplicationController
   require 'csv'
 
-  def create
-    @client = Slack::Web::Client.new
+  before_action :init, :only => [:index, :create, :destroy]
 
+
+  def index
+    @sss = @client.channels_list
+  end
+
+  def create
     @project_hash = {
       1874223 => 'Ernesto',
       1978467 => 'General R&D',
@@ -20,7 +25,6 @@ class CheckinsController < ApplicationController
     @user = params[:name]
     @previous_day = params[:previous_day]
     @current_day = params[:current_day]
-    @channel = 'checkins'
     @current_date = Date.today
     @previous_date = @current_date.monday? ? (@current_date - 3) : Date.yesterday
 
@@ -43,8 +47,26 @@ class CheckinsController < ApplicationController
   end
 
 
+    def destroy
+      timestamp = self.parse_timestamp params[:timestamp]
 
-  private
+      message_format = {
+        :channel => @channel,
+        :ts => timestamp
+      }
+
+      @client.chat_delete message_format
+
+      redirect_to :root
+    end
+
+
+
+  protected
+
+  def parse_timestamp ts
+    ts.insert 10 ,'.'
+  end
 
   def generate_attachments arr, previous_day
     estimate = 0
@@ -95,5 +117,19 @@ class CheckinsController < ApplicationController
         :mrkdwn_in => ['fields']
       }
     )
+  end
+
+
+
+  private
+
+  def init
+    channel_hash = {
+      'bot-test' => 'C1D6U9RQC',
+      'checkins' => 'C13M4L95W'
+    }
+
+    @client = Slack::Web::Client.new
+    @channel = channel_hash['checkins']
   end
 end

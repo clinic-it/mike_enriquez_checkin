@@ -1,3 +1,5 @@
+%h3 Upload Checkin
+
 = form_tag :checkins, :multipart => true, :method => :post do
   = text_field_tag :name, nil, {:placeholder => 'Name'}
   = label_tag :previous_day
@@ -5,3 +7,9 @@
   = label_tag :current_day
   = file_field_tag :current_day
   = submit_tag 'Publish Checkin'
+
+
+%h3 Delete
+= form_tag :checkins, :method => :delete do
+  = text_field_tag :timestamp, nil, {:placeholder => 'Timestamp from Slack'}
+  = submit_tag 'Delete Checkin'
