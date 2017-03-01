@@ -46,3 +46,7 @@ group :development do
 end
 
 gem 'rails_12factor', group: :production
+
+gem 'haml'
+gem 'slack-ruby-client'
+gem 'figaro'
