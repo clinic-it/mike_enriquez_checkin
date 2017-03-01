@@ -20,7 +20,7 @@ class CheckinsController < ApplicationController
     @user = params[:name]
     @previous_day = params[:previous_day]
     @current_day = params[:current_day]
-    @channel = 'bot-test'
+    @channel = 'checkins'
     @current_date = Date.today
     @previous_date = @current_date.monday? ? (@current_date - 3) : Date.yesterday
 
