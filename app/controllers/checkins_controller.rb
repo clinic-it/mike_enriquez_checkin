@@ -76,9 +76,9 @@ class CheckinsController < ApplicationController
 
     pretext =
       if previous_day
-        @previous_date.strftime 'Previous Day (%A - %m/%d/%Y)'
+        @previous_date.strftime "What I've worked on (%A - %m/%d/%Y)"
       else
-        @current_date.strftime 'Current Day (%A - %m/%d/%Y)'
+        @current_date.strftime "What I'm going to do (%A - %m/%d/%Y)"
       end
 
     arr.each do |entry|
@@ -151,6 +151,6 @@ class CheckinsController < ApplicationController
     }
 
     @client = Slack::Web::Client.new
-    @channel = channel_hash['checkins']
+    @channel = channel_hash[ENV['channel']]
   end
 end
