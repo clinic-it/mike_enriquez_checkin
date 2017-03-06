@@ -151,6 +151,6 @@ class CheckinsController < ApplicationController
     }
 
     @client = Slack::Web::Client.new
-    @channel = channel_hash['bot-test']
+    @channel = channel_hash['checkins']
   end
 end
