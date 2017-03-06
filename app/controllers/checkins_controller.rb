@@ -19,7 +19,8 @@ class CheckinsController < ApplicationController
       1435854 => 'LSD-MAT',
       1149370 => 'LSD-MBC',
       1876729 => 'Amanda',
-      1143948 => 'Effie'
+      1143948 => 'Effie',
+      811717 => 'DOCD'
     }
 
     @user = User.find_by_id params[:id]
