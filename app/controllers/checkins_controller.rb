@@ -49,25 +49,25 @@ class CheckinsController < ApplicationController
   end
 
 
-    def destroy
-      timestamp = self.parse_timestamp params[:timestamp]
+  def destroy
+    timestamp = self.parse_timestamp params[:timestamp]
 
-      message_format = {
-        :channel => @channel,
-        :ts => timestamp
-      }
+    message_format = {
+      :channel => @channel,
+      :ts => timestamp
+    }
 
-      @client.chat_delete message_format
+    @client.chat_delete message_format
 
-      redirect_to :root
-    end
+    redirect_to :root
+  end
 
 
 
   protected
 
   def parse_timestamp ts
-    ts.insert 10 ,'.'
+    ts.tr('p', '').insert 10 ,'.'
   end
 
   def generate_attachments arr, previous_day
