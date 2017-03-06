@@ -86,7 +86,7 @@ class CheckinsController < ApplicationController
       fields.push(
         :value =>
           if entry[0].nil?
-            file_to_process = previous_day ? @previous_day.path : @current_day.path
+            file_to_process = previous_day ? @previous_day.original_filename : @current_day.original_filename
             "*Work on #{file_to_process.split('_')[0]}*"
           else
             "*Work on #{@project_hash[entry[0].to_i]}*"
