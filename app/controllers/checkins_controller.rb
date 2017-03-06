@@ -22,7 +22,7 @@ class CheckinsController < ApplicationController
       1143948 => 'Effie'
     }
 
-    @user = params[:name]
+    @user = User.find_by_id params[:id]
     @previous_day = params[:previous_day]
     @current_day = params[:current_day]
     @current_date = Date.today
@@ -34,10 +34,11 @@ class CheckinsController < ApplicationController
     message_format = {
       :channel => @channel,
       :as_user => true,
-      :text => "*#{@user} filed his daily checkin.*",
+      :text => "*#{@user.username} filed his daily checkin.*",
       :attachments => [
         generate_attachments(previous_day, true),
-        generate_attachments(current_day, false)
+        generate_attachments(current_day, false),
+        generate_blockers(params[:blockers])
       ]
     }
 
@@ -119,6 +120,25 @@ class CheckinsController < ApplicationController
     )
   end
 
+  def generate_blockers blockers
+    fields = []
+
+    fields.push(
+      {
+        :title => 'Blockers',
+        :value => blockers
+      }
+    )
+
+    return(
+      {
+        :fields => fields,
+        :color => '#ff0000',
+        :mrkdwn_in => ['fields']
+      }
+    )
+  end
+
 
 
   private
@@ -130,6 +150,6 @@ class CheckinsController < ApplicationController
     }
 
     @client = Slack::Web::Client.new
-    @channel = channel_hash['checkins']
+    @channel = channel_hash['bot-test']
   end
 end

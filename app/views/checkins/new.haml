@@ -1,12 +1,22 @@
 %h3 Upload Checkin
 
 = form_tag :checkins, :multipart => true, :method => :post do
-  = text_field_tag :name, nil, {:placeholder => 'Name'}
-  = label_tag :previous_day
-  = file_field_tag :previous_day
-  = label_tag :current_day
-  = file_field_tag :current_day
-  = submit_tag 'Publish Checkin'
+  %table
+    %tr
+      %td= label_tag :name
+      %td= select_tag :id, options_from_collection_for_select(User.all, 'id', 'username'), {:required => true, :include_blank => ''}
+    %tr
+      %td= label_tag :previous_day
+      %td= file_field_tag :previous_day, {:required => true}
+    %tr
+      %td= label_tag :current_day
+      %td= file_field_tag :current_day, {:required => true}
+    %tr
+      %td= label_tag :blockers
+      %td= text_area_tag :blockers, nil, {placeholder: 'Optional', :rows => 10, :cols => 60}
+    %tr
+      %td
+      %td= submit_tag 'Publish Checkin'
 
 
 %h3 Delete
