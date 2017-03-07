@@ -9,20 +9,6 @@ class CheckinsController < ApplicationController
   end
 
   def create
-    @project_hash = {
-      1874223 => 'Ernesto',
-      1978467 => 'General R&D',
-      1149382 => 'LSD-JB',
-      1977673 => 'FlightBot',
-      1435852 => 'LSD-LG',
-      97426 => 'LSD-BT',
-      1435854 => 'LSD-MAT',
-      1149370 => 'LSD-MBC',
-      1876729 => 'Amanda',
-      1143948 => 'Effie',
-      811717 => 'DOCD'
-    }
-
     @user = User.find_by_id params[:id]
     @current_tasks = params[:current_tasks]
     @upcoming_tasks = params[:upcoming_tasks]
@@ -82,14 +68,15 @@ class CheckinsController < ApplicationController
       end
 
     arr.each do |entry|
+      project = Project.find_by_pivotal_id entry[0].to_i
 
       fields.push(
         :value =>
-          if entry[0].nil?
+          if project.nil?
             file_to_process = current_tasks ? @current_tasks.original_filename : @upcoming_tasks.original_filename
             "*Work on #{file_to_process.split('_')[0]}*"
           else
-            "*Work on #{@project_hash[entry[0].to_i]}*"
+            "*Work on #{project.name}*"
           end
       )
 
