@@ -1,1 +1,13 @@
 %h3= "Checkin for #{@checkin.checkin_date}"
+
+- @checkin.tasks.group_by(&:user).each_pair do |user, tasks_by_user|
+  %h2= user.username
+  - tasks_by_user.group_by(&:current).each_pair do |current, tasks_by_current|
+    %br
+    %b= current ? 'What I did today' : 'What I will do tomorrow'
+    - tasks_by_current.group_by(&:project).each_pair do |project, tasks_by_project|
+      %br= project.try(&:name)
+      - tasks_by_project.each do |task|
+        =link_to "[#{task.task_type}][#{task.current_state}][#{task.estimate}] #{task.title}", task.url
+        %br
+    %p= "Load: #{tasks_by_current.map(&:estimate).inject(0, &:+)}"
