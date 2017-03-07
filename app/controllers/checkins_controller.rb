@@ -24,21 +24,21 @@ class CheckinsController < ApplicationController
     }
 
     @user = User.find_by_id params[:id]
-    @previous_day = params[:previous_day]
-    @current_day = params[:current_day]
+    @current_tasks = params[:current_tasks]
+    @upcoming_tasks = params[:upcoming_tasks]
     @current_date = Date.today
-    @previous_date = @current_date.monday? ? (@current_date - 3) : Date.yesterday
+    @upcoming_date = @current_date.friday? ? (@current_date + 3) : Date.tomorrow
 
-    previous_day = CSV.read(@previous_day.path, :headers => true).group_by{|task| task['Project Id']}
-    current_day = CSV.read(@current_day.path, :headers => true).group_by{|task| task['Project Id']}
+    current_tasks = CSV.read(@current_tasks.path, :headers => true).group_by{|task| task['Project Id']}
+    upcoming_tasks = CSV.read(@upcoming_tasks.path, :headers => true).group_by{|task| task['Project Id']}
 
     message_format = {
       :channel => @channel,
       :as_user => true,
       :text => "*#{@user.username} filed his daily checkin.*",
       :attachments => [
-        generate_attachments(previous_day, true),
-        generate_attachments(current_day, false),
+        generate_attachments(current_tasks, true),
+        generate_attachments(upcoming_tasks, false),
         generate_blockers(params[:blockers])
       ]
     }
@@ -70,15 +70,15 @@ class CheckinsController < ApplicationController
     ts.tr('p', '').insert 10 ,'.'
   end
 
-  def generate_attachments arr, previous_day
+  def generate_attachments arr, current_tasks
     estimate = 0
     fields = []
 
     pretext =
-      if previous_day
-        @previous_date.strftime "What I've worked on (%A - %m/%d/%Y)"
+      if current_tasks
+        @current_date.strftime "What I've worked on (%A - %m/%d/%Y)"
       else
-        @current_date.strftime "What I'm going to do (%A - %m/%d/%Y)"
+        @upcoming_date.strftime "What I'm going to do (%A - %m/%d/%Y)"
       end
 
     arr.each do |entry|
@@ -86,7 +86,7 @@ class CheckinsController < ApplicationController
       fields.push(
         :value =>
           if entry[0].nil?
-            file_to_process = previous_day ? @previous_day.original_filename : @current_day.original_filename
+            file_to_process = current_tasks ? @current_tasks.original_filename : @upcoming_tasks.original_filename
             "*Work on #{file_to_process.split('_')[0]}*"
           else
             "*Work on #{@project_hash[entry[0].to_i]}*"
