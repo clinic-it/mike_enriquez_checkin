@@ -7,10 +7,10 @@
       %td= select_tag :id, options_from_collection_for_select(User.all, 'id', 'username'), {:required => true, :include_blank => ''}
     %tr
       %td= label_tag "What I've worked on"
-      %td= file_field_tag :previous_day, {:required => true}
+      %td= file_field_tag :current_tasks, {:required => true}
     %tr
       %td= label_tag "What I'm going to do"
-      %td= file_field_tag :current_day, {:required => true}
+      %td= file_field_tag :upcoming_tasks, {:required => true}
     %tr
       %td= label_tag :blockers
       %td= text_area_tag :blockers, nil, {placeholder: 'Optional', :rows => 10, :cols => 60}
