@@ -89,7 +89,7 @@ class CheckinsController < ApplicationController
 
         Task.create(
           :checkin_id => @checkin.id,
-          :project_id => project.id,
+          :project_id => project.nil? ? 100000 : project.id,
           :user_id => @user.id,
           :title => task['Title'],
           :url => task['URL'],

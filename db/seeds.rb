@@ -32,3 +32,5 @@ if Project.all.blank?
     Project.create :name => name, :pivotal_id => id
   end
 end
+
+Project.create :name => 'Unsorted', :pivotal_id => 100000
