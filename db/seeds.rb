@@ -6,7 +6,29 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-User.create :username => 'James'
-User.create :username => 'Jomel'
-User.create :username => 'Julius'
-User.create :username => 'Kenneth'
+project_hash = {
+  1874223 => 'Ernesto',
+  1978467 => 'General R&D',
+  1149382 => 'LSD-JB',
+  1977673 => 'FlightBot',
+  1435852 => 'LSD-LG',
+  97426 => 'LSD-BT',
+  1435854 => 'LSD-MAT',
+  1149370 => 'LSD-MBC',
+  1876729 => 'Amanda',
+  1143948 => 'Effie',
+  811717 => 'DOCD'
+}
+
+if User.all.blank?
+  User.create :username => 'James'
+  User.create :username => 'Jomel'
+  User.create :username => 'Julius'
+  User.create :username => 'Kenneth'
+end
+
+if Project.all.blank?
+  project_hash.each_pair do |id, name|
+    Project.create :name => name, :pivotal_id => id
+  end
+end
