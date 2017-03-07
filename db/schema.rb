@@ -11,16 +11,43 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170307061609) do
+ActiveRecord::Schema.define(version: 20170307071459) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "blockers", force: :cascade do |t|
+    t.integer  "checkin_id",  null: false
+    t.integer  "user_id",     null: false
+    t.string   "description"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "checkins", force: :cascade do |t|
+    t.date     "checkin_date", null: false
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
 
   create_table "projects", force: :cascade do |t|
     t.string   "name",       null: false
     t.integer  "pivotal_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "tasks", force: :cascade do |t|
+    t.integer  "project_id"
+    t.integer  "user_id"
+    t.integer  "checkin_id"
+    t.string   "title",         null: false
+    t.string   "url",           null: false
+    t.string   "current_state"
+    t.integer  "estimate",      null: false
+    t.boolean  "current",       null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
 
   create_table "users", force: :cascade do |t|

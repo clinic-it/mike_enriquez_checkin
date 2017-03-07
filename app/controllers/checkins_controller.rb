@@ -5,11 +5,14 @@ class CheckinsController < ApplicationController
 
 
   def index
-    @sss = @client.channels_list
+    @checkins = Checkin.all.reverse
+  end
+
+  def show
+    @checkin = Checkin.find_by_id params[:id]
   end
 
   def create
-    @user = User.find_by_id params[:id]
     @current_tasks = params[:current_tasks]
     @upcoming_tasks = params[:upcoming_tasks]
     @current_date = Date.today
@@ -83,6 +86,18 @@ class CheckinsController < ApplicationController
       project_tasks = entry[1]
 
       project_tasks.each do |task|
+
+        Task.create(
+          :checkin_id => @checkin.id,
+          :project_id => project.id,
+          :user_id => @user.id,
+          :title => task['Title'],
+          :url => task['URL'],
+          :current_state => task['Current State'],
+          :estimate => task['Estimate'],
+          :current => current_tasks
+        )
+
         fields.push(
           :value => "<#{task['URL']}|•[#{task['Type']}][#{task['Current State']}][#{task['Estimate']}] #{task['Title']}>"
         )
@@ -110,7 +125,13 @@ class CheckinsController < ApplicationController
 
   def generate_blockers blockers
     return if blockers.empty?
-    
+
+    Blocker.create(
+      :checkin_id => @checkin.id,
+      :user_id => @user.id,
+      :description => blockers
+    )
+
     fields = []
 
     fields.push(
@@ -139,6 +160,8 @@ class CheckinsController < ApplicationController
       'checkins' => 'C13M4L95W'
     }
 
+    @user = User.find_by_id params[:id]
+    @checkin = Checkin.find_or_create_by :checkin_date => Date.today
     @client = Slack::Web::Client.new
     @channel = channel_hash[ENV['channel']]
   end
