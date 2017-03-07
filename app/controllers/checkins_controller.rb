@@ -122,6 +122,8 @@ class CheckinsController < ApplicationController
   end
 
   def generate_blockers blockers
+    return if blockers.empty?
+    
     fields = []
 
     fields.push(
