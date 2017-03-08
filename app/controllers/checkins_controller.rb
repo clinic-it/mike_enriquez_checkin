@@ -95,11 +95,14 @@ class CheckinsController < ApplicationController
           :url => task['URL'],
           :current_state => task['Current State'],
           :estimate => task['Estimate'],
+          :task_type => task['Type'],
           :current => current_tasks
         )
 
+        display_estimate = (task['Estimate'] == nil) ? 'Unestimated' : task['Estimate']
+
         fields.push(
-          :value => "<#{task['URL']}|•[#{task['Type']}][#{task['Current State']}][#{task['Estimate']}] #{task['Title']}>"
+          :value => "<#{task['URL']}|•[#{task['Type']}][#{task['Current State']}][#{display_estimate}] #{task['Title']}>"
         )
 
         estimate += task['Estimate'].to_i
