@@ -95,6 +95,7 @@ class CheckinsController < ApplicationController
           :url => task['URL'],
           :current_state => task['Current State'],
           :estimate => task['Estimate'],
+          :task_type => task['Type'],
           :current => current_tasks
         )
 
