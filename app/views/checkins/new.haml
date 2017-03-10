@@ -17,6 +17,9 @@
       %td= label_tag :blockers
       %td= text_area_tag :blockers, nil, {placeholder: 'Optional', :rows => 10, :cols => 60}
     %tr
+      %td= label_tag :notes
+      %td= text_area_tag :notes, nil, {placeholder: 'Optional', :rows => 10, :cols => 60}
+    %tr
       %td
       %td= submit_tag 'Publish Checkin'
 

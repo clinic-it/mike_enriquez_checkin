@@ -28,7 +28,8 @@ class CheckinsController < ApplicationController
       :attachments => [
         generate_attachments(current_tasks, true),
         generate_attachments(upcoming_tasks, false),
-        generate_blockers(params[:blockers])
+        generate_blockers(params[:blockers]),
+        generate_notes(params[:notes])
       ]
     }
 
@@ -148,6 +149,33 @@ class CheckinsController < ApplicationController
       {
         :fields => fields,
         :color => '#ff0000',
+        :mrkdwn_in => ['fields']
+      }
+    )
+  end
+
+  def generate_notes notes
+    return if notes.empty?
+
+    Note.create(
+      :checkin_id => @checkin.id,
+      :user_id => @user.id,
+      :description => notes
+    )
+
+    fields = []
+
+    fields.push(
+      {
+        :title => 'Notes',
+        :value => notes
+      }
+    )
+
+    return(
+      {
+        :fields => fields,
+        :color => '#0000ff',
         :mrkdwn_in => ['fields']
       }
     )
