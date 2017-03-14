@@ -33,4 +33,17 @@ if Project.all.blank?
   end
 end
 
-Project.create :name => 'Unsorted', :pivotal_id => 100000
+Project.find_or_create_by :name => 'Unsorted', :pivotal_id => 100000
+
+a = {
+  'James' => 'James Kristopher Pena',
+  'Jomel' => 'Jomel Ancino',
+  'Julius' => 'Julius Blanco',
+  'Kenneth' => 'Kenneth Cruz'
+}
+
+a.each_pair do |username, fullname|
+  user = User.find_by_username username
+  user.fullname = fullname
+  user.save
+end
