@@ -87,26 +87,33 @@ class CheckinsController < ApplicationController
       project_tasks = entry[1]
 
       project_tasks.each do |task|
+        task_owners = []
 
-        Task.create(
-          :checkin_id => @checkin.id,
-          :project_id => project.nil? ? 100000 : project.id,
-          :user_id => @user.id,
-          :title => task['Title'],
-          :url => task['URL'],
-          :current_state => task['Current State'],
-          :estimate => task['Estimate'],
-          :task_type => task['Type'],
-          :current => current_tasks
-        )
+        task.each do |field|
+          task_owners.push field.last if field.first == 'Owned By'
+        end
 
-        display_estimate = (task['Estimate'] == nil) ? 'Unestimated' : task['Estimate']
+        if task_owners.include? @user.fullname
+          Task.create(
+            :checkin_id => @checkin.id,
+            :project_id => project.nil? ? 100000 : project.id,
+            :user_id => @user.id,
+            :title => task['Title'],
+            :url => task['URL'],
+            :current_state => task['Current State'],
+            :estimate => task['Estimate'],
+            :task_type => task['Type'],
+            :current => current_tasks
+          )
 
-        fields.push(
-          :value => "<#{task['URL']}|•[#{task['Type']}][#{task['Current State']}][#{display_estimate}] #{task['Title']}>"
-        )
+          display_estimate = (task['Estimate'] == nil) ? 'Unestimated' : task['Estimate']
 
-        estimate += task['Estimate'].to_i
+          fields.push(
+            :value => "<#{task['URL']}|•[#{task['Type']}][#{task['Current State']}][#{display_estimate}] #{task['Title']}>"
+          )
+
+          estimate += task['Estimate'].to_i
+        end
       end
 
     end
