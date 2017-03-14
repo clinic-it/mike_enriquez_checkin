@@ -5,6 +5,7 @@ class CheckinsController < ApplicationController
 
 
   def index
+    @pivotal = TrackerApi::Client.new(token: '0dbcbec6e4625e965dbdf5444dcb929d')
     @checkins = Checkin.all.reverse
   end
 

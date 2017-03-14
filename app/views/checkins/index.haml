@@ -1,3 +1,8 @@
 - @checkins.each do |date|
   =link_to date.checkin_date, date
   %br
+
+- @pivotal.projects.each do |project|
+  - project.stories.each do |story|
+    = story.name
+    %br
