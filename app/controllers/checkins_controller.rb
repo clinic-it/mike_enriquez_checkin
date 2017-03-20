@@ -5,7 +5,6 @@ class CheckinsController < ApplicationController
 
 
   def index
-    @pivotal = TrackerApi::Client.new(token: '0dbcbec6e4625e965dbdf5444dcb929d')
     @checkins = Checkin.all.reverse
   end
 
@@ -14,6 +13,7 @@ class CheckinsController < ApplicationController
   end
 
   def create
+    raise 'test'.inspect
     @current_tasks = params[:current_tasks]
     @upcoming_tasks = params[:upcoming_tasks]
     @current_date = Date.today

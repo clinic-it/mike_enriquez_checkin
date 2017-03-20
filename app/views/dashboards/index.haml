@@ -1,0 +1,20 @@
+= form_for @checkin, :method => :post do |f|
+  - @pivotal.projects.each do |project|
+    %h3= project.name
+    - project.iterations(:scope => 'current_backlog').each do |iteration|
+      -# - iteration.stories.each do |story|
+      = f.collection_check_boxes :today, iteration.stories, :id, :name
+      -# = story.name
+      %br
+    %hr
+  -#
+  -# = fields_for :tomorrow, Task.new do |tomorrow|
+  -#   - @pivotal.projects.each do |project|
+  -#     %h3= project.name
+  -#     - project.iterations(:scope => 'current_backlog').each do |iteration|
+  -#       - iteration.stories.each do |story|
+  -#         = tomorrow.check_box 'tasks', {:multiple => true}, story.id
+  -#         = story.name
+  -#         %br
+  -#     %hr
+  = f.submit

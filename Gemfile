@@ -51,5 +51,6 @@ gem 'haml'
 gem 'slack-ruby-client'
 gem 'figaro'
 gem 'tracker_api'
+gem 'reform-rails'
 
 ruby '2.2.1'
