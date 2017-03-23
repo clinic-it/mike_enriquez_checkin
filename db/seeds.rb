@@ -17,7 +17,8 @@ project_hash = {
   1149370 => 'LSD-MBC',
   1876729 => 'Amanda',
   1143948 => 'Effie',
-  811717 => 'DOCD'
+  811717 => 'DOCD',
+  1990979 => 'Fox Optimal Living Program Database'
 }
 
 if User.all.blank?
@@ -27,10 +28,9 @@ if User.all.blank?
   User.create :username => 'Kenneth'
 end
 
-if Project.all.blank?
-  project_hash.each_pair do |id, name|
-    Project.create :name => name, :pivotal_id => id
-  end
+
+project_hash.each_pair do |id, name|
+  Project.find_or_create_by :name => name, :pivotal_id => id
 end
 
 Project.find_or_create_by :name => 'Unsorted', :pivotal_id => 100000
