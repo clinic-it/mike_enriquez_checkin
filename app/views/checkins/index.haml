@@ -1,3 +1,7 @@
 - @checkins.each do |date|
   =link_to date.checkin_date, date
   %br
+
+
+- User.all.each do |user|
+  = link_to user.username, user

@@ -1,0 +1,7 @@
+= @user.username
+
+%br
+
+- @user.tasks.group_by(&:week).each do |week, tasks|
+  = "#{Task.week_dates(week)} - #{tasks.reject{|task| !task.current}.sum{|task| task.estimate}} - #{tasks.reject{|task| task.current}.sum{|task| task.estimate}}"
+  %br
