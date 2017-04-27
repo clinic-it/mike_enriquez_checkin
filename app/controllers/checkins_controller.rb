@@ -5,7 +5,7 @@ class CheckinsController < ApplicationController
 
 
   def index
-    @checkins = Checkin.all.reverse
+    @checkins = Checkin.all.order(:checkin_date => :desc).page params[:page]
   end
 
   def show
