@@ -1,4 +1,5 @@
 class CheckinsController < ApplicationController
+
   require 'csv'
 
   before_action :init, :only => [:index, :create, :destroy]
@@ -34,7 +35,7 @@ class CheckinsController < ApplicationController
       ]
     }
 
-    posted_checkin = @client.chat_postMessage(message_format)
+    posted_checkin = @client.chat_postMessage message_format
 
     self.update_message_timestamp @all_tasks, posted_checkin.ts
 
@@ -50,7 +51,9 @@ class CheckinsController < ApplicationController
       :ts => timestamp
     }
 
-    @client.chat_delete message_format
+    deleted_checkin = @client.chat_delete message_format
+
+    self.destroy_tasks_from_checkin deleted_checkin.ts
 
     redirect_to :root
   end
@@ -197,6 +200,11 @@ class CheckinsController < ApplicationController
     tasks.each do |task|
       task.update_attributes :message_timestamp => timestamp
     end
+  end
+
+  def destroy_tasks_from_checkin timestamp
+    tasks = Task.where :message_timestamp => timestamp
+    tasks.destroy_all
   end
 
 
