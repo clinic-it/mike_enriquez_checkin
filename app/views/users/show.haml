@@ -1,0 +1,18 @@
+%br
+.card
+  .card-header
+    %h3= @user.username
+
+  .card-block
+    .col-md-6.offset-md-3
+      %table.table
+        %thead.thead-default
+          %th.text-center Week
+          %th.text-center Previous
+          %th.text-center Current
+        %tbody
+          - @user.tasks_by_week.reverse_each do |week, tasks|
+            %tr.text-center
+              %td= "#{Task.week_dates(week)}"
+              %td= "#{tasks.reject{|task| task.current}.sum{|task| task.estimate ? task.estimate : 0}}"
+              %td= "#{tasks.reject{|task| !task.current}.sum{|task| task.estimate ? task.estimate : 0}}"

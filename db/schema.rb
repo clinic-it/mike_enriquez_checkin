@@ -52,7 +52,7 @@ ActiveRecord::Schema.define(version: 20170314075223) do
     t.string   "title",                             null: false
     t.string   "url",                               null: false
     t.string   "current_state"
-    t.integer  "estimate"
+    t.integer  "estimate",      default: 0
     t.boolean  "current",                           null: false
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false

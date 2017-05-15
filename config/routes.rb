@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   resources :checkins
   resources :dashboards
+  resources :users, :only => [:show]
 
   delete 'checkins' => 'checkins#destroy'
 end

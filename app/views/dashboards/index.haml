@@ -1,20 +1,51 @@
-= form_for @checkin, :method => :post do |f|
-  - @pivotal.projects.each do |project|
-    %h3= project.name
-    - project.iterations(:scope => 'current_backlog').each do |iteration|
-      -# - iteration.stories.each do |story|
-      = f.collection_check_boxes :today, iteration.stories, :id, :name
-      -# = story.name
-      %br
-    %hr
-  -#
-  -# = fields_for :tomorrow, Task.new do |tomorrow|
-  -#   - @pivotal.projects.each do |project|
-  -#     %h3= project.name
-  -#     - project.iterations(:scope => 'current_backlog').each do |iteration|
-  -#       - iteration.stories.each do |story|
-  -#         = tomorrow.check_box 'tasks', {:multiple => true}, story.id
-  -#         = story.name
-  -#         %br
-  -#     %hr
-  = f.submit
+.container-fluid
+  .col-md-12.row
+    .col
+      .card
+        .card-title What I did yesterday
+        = form_for @checkin, :method => :post do |f|
+          - @pivotal.projects.each do |project|
+            %h3= project.name
+            - project.iterations(:scope => 'current_backlog').each do |iteration|
+              = f.collection_check_boxes :today, iteration.stories, :id, :name do |b|
+                .form-group
+                  = b.label do
+                    = b.check_box
+                    = b.text
+            %hr
+          -#
+          -# = fields_for :tomorrow, Task.new do |tomorrow|
+          -#   - @pivotal.projects.each do |project|
+          -#     %h3= project.name
+          -#     - project.iterations(:scope => 'current_backlog').each do |iteration|
+          -#       - iteration.stories.each do |story|
+          -#         = tomorrow.check_box 'tasks', {:multiple => true}, story.id
+          -#         = story.name
+          -#         %br
+          -#     %hr
+          = f.submit
+
+    .col
+      .card
+        .card-title What I will do today
+        = form_for @checkin, :method => :post do |f|
+          - @pivotal.projects.each do |project|
+            %h3= project.name
+            - project.iterations(:scope => 'current_backlog').each do |iteration|
+              = f.collection_check_boxes :today, iteration.stories, :id, :name do |b|
+                .form-group
+                  = b.label do
+                    = b.check_box
+                    = b.text
+            %hr
+          -#
+          -# = fields_for :tomorrow, Task.new do |tomorrow|
+          -#   - @pivotal.projects.each do |project|
+          -#     %h3= project.name
+          -#     - project.iterations(:scope => 'current_backlog').each do |iteration|
+          -#       - iteration.stories.each do |story|
+          -#         = tomorrow.check_box 'tasks', {:multiple => true}, story.id
+          -#         = story.name
+          -#         %br
+          -#     %hr
+          = f.submit
