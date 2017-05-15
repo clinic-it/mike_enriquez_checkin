@@ -17,6 +17,7 @@ class CheckinsController < ApplicationController
     @upcoming_tasks = params[:upcoming_tasks]
     @current_date = Date.today
     @upcoming_date = @current_date.friday? ? (@current_date + 3) : Date.tomorrow
+    @all_tasks = []
 
     current_tasks = CSV.read(@current_tasks.path, :headers => true).group_by{|task| task['Project Id']}
     upcoming_tasks = CSV.read(@upcoming_tasks.path, :headers => true).group_by{|task| task['Project Id']}
@@ -33,7 +34,9 @@ class CheckinsController < ApplicationController
       ]
     }
 
-    @client.chat_postMessage message_format
+    posted_checkin = @client.chat_postMessage(message_format)
+
+    self.update_message_timestamp @all_tasks, posted_checkin.ts
 
     redirect_to :root
   end
@@ -94,16 +97,18 @@ class CheckinsController < ApplicationController
         end
 
         if task_owners.include? @user.fullname
-          Task.create(
-            :checkin_id => @checkin.id,
-            :project_id => project.nil? ? 100000 : project.id,
-            :user_id => @user.id,
-            :title => task['Title'],
-            :url => task['URL'],
-            :current_state => task['Current State'],
-            :estimate => task['Estimate'],
-            :task_type => task['Type'],
-            :current => current_tasks
+          @all_tasks.push(
+            Task.create(
+              :checkin_id => @checkin.id,
+              :project_id => project.nil? ? 100000 : project.id,
+              :user_id => @user.id,
+              :title => task['Title'],
+              :url => task['URL'],
+              :current_state => task['Current State'],
+              :estimate => task['Estimate'],
+              :task_type => task['Type'],
+              :current => current_tasks
+            )
           )
 
           display_estimate = (task['Estimate'] == nil) ? 'Unestimated' : task['Estimate']
@@ -188,6 +193,12 @@ class CheckinsController < ApplicationController
     )
   end
 
+  def update_message_timestamp tasks, timestamp
+    tasks.each do |task|
+      task.update_attributes :message_timestamp => timestamp
+    end
+  end
+
 
 
   private
@@ -203,4 +214,5 @@ class CheckinsController < ApplicationController
     @client = Slack::Web::Client.new
     @channel = channel_hash[ENV['channel']]
   end
+
 end
