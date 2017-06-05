@@ -14,12 +14,12 @@
           %br
       %p= "Load: #{tasks_by_current.map(&:estimate).inject(0, &:+)}"
 
-      - blockers = @checkin.blockers.where(:user => user).first
-      - unless blockers.nil?
-        %b Blockers
-        %p= blockers.description
+    - blockers = @checkin.blockers.where(:user => user).first
+    - unless blockers.nil?
+      %b Blockers
+      %p= blockers.description
 
-      - notes = @checkin.notes.where(:user => user).first
-      - unless notes.nil?
-        %b Notes
-        %p= notes.description
+    - notes = @checkin.notes.where(:user => user).first
+    - unless notes.nil?
+      %b Notes
+      %p= notes.description

@@ -244,6 +244,10 @@ class CheckinsController < ApplicationController
     s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
     obj = s3.bucket(ENV['bucketname']).object(filename)
     obj.upload_file("public/checkins/#{filename}")
+
+    user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
+    user_checkin.screenshot_path = obj.public_url
+    user_checkin.save
   end
 
 end
