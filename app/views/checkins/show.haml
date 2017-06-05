@@ -1,7 +1,5 @@
 .col-sm-12
   %h3= "Checkin for #{@checkin.checkin_date}"
 
-  -# = render :partial => 'user_checkin', :collection => User.all, :as => :user
-
   - @checkin.user_checkins.each do |user_checkin|
     = image_tag user_checkin.screenshot_path
