@@ -28,6 +28,11 @@ source 'https://rails-assets.org' do
 end
 
 gem 'kaminari'
+
+
+gem 'imgkit', '1.6.1'
+gem 'wkhtmltoimage-binary', '0.12.4'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
