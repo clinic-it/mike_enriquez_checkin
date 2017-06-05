@@ -233,13 +233,17 @@ class CheckinsController < ApplicationController
   end
 
   def generate_snapshot
-    @kit = IMGKit.new render_to_string(:partial => 'checkins/user_checkin', :locals => {:@checkin => @checkin, :user => @user})
-
-    save_path = Rails.root.join 'public/checkins', 'Test'
+    kit = IMGKit.new render_to_string(:partial => 'checkins/user_checkin', :locals => {:@checkin => @checkin, :user => @user})
+    filename = "#{@user.username}_#{@checkin.checkin_date}"
+    save_path = Rails.root.join 'public/checkins', filename
 
     File.open(save_path, 'wb') do |file|
-      file << @kit.to_img(:jpg)
+      file << kit.to_img(:jpg)
     end
+
+    s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
+    obj = s3.bucket(ENV['bucketname']).object(filename)
+    obj.upload_file("public/checkins/#{filename}")
   end
 
 end
