@@ -3,6 +3,7 @@ class CheckinsController < ApplicationController
   require 'csv'
 
   before_action :init, :only => [:index, :create, :destroy]
+  after_action :generate_snapshot, :only => [:create]
 
 
   def index
@@ -11,6 +12,14 @@ class CheckinsController < ApplicationController
 
   def show
     @checkin = Checkin.find_by_id params[:id]
+
+    respond_to do |format|
+      format.html
+      format.jpg do
+        @kit = IMGKit.new(render_to_string)
+        send_data(@kit.to_jpg, :type => 'image/jpeg', :disposition => 'inline')
+      end
+    end
   end
 
   def create
@@ -221,6 +230,24 @@ class CheckinsController < ApplicationController
     @checkin = Checkin.find_or_create_by :checkin_date => Date.today
     @client = Slack::Web::Client.new
     @channel = channel_hash[ENV['channel']]
+  end
+
+  def generate_snapshot
+    kit = IMGKit.new render_to_string(:partial => 'checkins/user_checkin', :locals => {:@checkin => @checkin, :user => @user})
+    filename = "#{@user.username}_#{@checkin.checkin_date}"
+    save_path = Rails.root.join 'tmp', filename
+
+    File.open(save_path, 'wb') do |file|
+      file << kit.to_img(:jpg)
+    end
+
+    s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
+    obj = s3.bucket(ENV['bucketname']).object(filename)
+    obj.upload_file("tmp/#{filename}")
+
+    user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
+    user_checkin.screenshot_path = obj.public_url
+    user_checkin.save
   end
 
 end

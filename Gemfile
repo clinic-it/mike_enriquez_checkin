@@ -28,6 +28,15 @@ source 'https://rails-assets.org' do
 end
 
 gem 'kaminari'
+
+# Used to generate image
+gem 'imgkit', '1.6.1'
+gem 'wkhtmltoimage-binary', '0.12.4'
+
+# Used to upload image to s3
+gem 'paperclip', '5.1.0'
+gem 'aws-sdk', '2.9.29'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
