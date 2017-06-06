@@ -87,6 +87,11 @@ GEM
       declarative-option (< 0.2.0)
       representable (>= 2.4.0, <= 3.1.0)
       uber (< 0.2.0)
+    draper (2.1.0)
+      actionpack (>= 3.0)
+      activemodel (>= 3.0)
+      activesupport (>= 3.0)
+      request_store (~> 1.0)
     equalizer (0.0.11)
     erubis (2.7.0)
     excon (0.56.0)
@@ -195,6 +200,7 @@ GEM
       declarative (< 0.1.0)
       declarative-option (< 0.2.0)
       uber (< 0.2.0)
+    request_store (1.3.2)
     sass (3.4.24)
     sass-rails (5.0.6)
       railties (>= 4.0.0, < 6)
@@ -266,6 +272,7 @@ DEPENDENCIES
   bootstrap (~> 4.0.0.alpha6)
   byebug
   coffee-rails (~> 4.1.0)
+  draper (= 2.1.0)
   figaro
   haml
   imgkit (= 1.6.1)

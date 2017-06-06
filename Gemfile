@@ -37,6 +37,9 @@ gem 'wkhtmltoimage-binary', '0.12.4'
 gem 'paperclip', '5.1.0'
 gem 'aws-sdk', '2.9.29'
 
+# Used as a decorator
+gem 'draper', '2.1.0'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

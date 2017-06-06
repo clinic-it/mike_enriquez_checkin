@@ -11,17 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170605102539) do
+ActiveRecord::Schema.define(version: 20170606021716) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "blockers", force: :cascade do |t|
-    t.integer  "checkin_id",  null: false
-    t.integer  "user_id",     null: false
+    t.integer  "checkin_id",        null: false
+    t.integer  "user_id",           null: false
     t.string   "description"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.string   "message_timestamp"
   end
 
   create_table "checkins", force: :cascade do |t|
@@ -31,11 +32,12 @@ ActiveRecord::Schema.define(version: 20170605102539) do
   end
 
   create_table "notes", force: :cascade do |t|
-    t.integer  "checkin_id",  null: false
-    t.integer  "user_id",     null: false
+    t.integer  "checkin_id",        null: false
+    t.integer  "user_id",           null: false
     t.string   "description"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.string   "message_timestamp"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -58,14 +60,16 @@ ActiveRecord::Schema.define(version: 20170605102539) do
     t.datetime "updated_at",                            null: false
     t.string   "task_type",         default: "feature", null: false
     t.string   "message_timestamp"
+    t.integer  "task_id"
   end
 
   create_table "user_checkins", force: :cascade do |t|
     t.integer  "checkin_id"
     t.integer  "user_id"
     t.string   "screenshot_path"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.string   "message_timestamp"
   end
 
   create_table "users", force: :cascade do |t|
