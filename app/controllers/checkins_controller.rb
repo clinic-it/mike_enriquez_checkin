@@ -97,7 +97,7 @@ class CheckinsController < ApplicationController
 
         if task_owners.include? @user.fullname
           @all_tasks.push(
-            Task.create(
+            new_task = Task.create(
               :checkin_id => @checkin.id,
               :project_id => project.nil? ? 100000 : project.id,
               :user_id => @user.id,
@@ -112,9 +112,10 @@ class CheckinsController < ApplicationController
           )
 
           display_estimate = (task['Estimate'] == nil) ? 'Unestimated' : task['Estimate']
+          times_checkedin = new_task.current ? "[Times checked in: #{new_task.times_checked_in_current}]" : ''
 
           fields.push(
-            :value => "<#{task['URL']}|•[#{task['Type']}][#{task['Current State']}][#{display_estimate}] #{task['Title']}>"
+            :value => "<#{task['URL']}|•[#{task['Type']}][#{task['Current State']}][#{display_estimate}]#{times_checkedin} #{task['Title']}>"
           )
 
           estimate += task['Estimate'].to_i
