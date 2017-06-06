@@ -1,7 +1,7 @@
 class CheckinsController < ApplicationController
 
   require 'csv'
-  
+
   before_action :init, :only => [:index, :create, :destroy]
   after_action :generate_snapshot, :only => [:create]
 
@@ -18,7 +18,7 @@ class CheckinsController < ApplicationController
     @yesterday_tasks = params[:yesterday_tasks]
     @current_tasks = params[:current_tasks]
     @current_date = Date.today
-    @upcoming_date = @current_date.friday? ? (@current_date + 3) : Date.tomorrow
+    @yesterday_date = @current_date.monday? ? (@current_date - 3) : Date.yesterday
     @all_tasks = []
 
     yesterday_tasks = CSV.read(@yesterday_tasks.path, :headers => true).group_by{|task| task['Project Id']}
@@ -70,9 +70,9 @@ class CheckinsController < ApplicationController
 
     pretext =
       if current_tasks
-        @current_date.strftime "What I've worked on (%A - %m/%d/%Y)"
+        @current_date.strftime "Current Tasks (%A - %m/%d/%Y)"
       else
-        @upcoming_date.strftime "What I'm going to do (%A - %m/%d/%Y)"
+        @yesterday_date.strftime "Yesterday's Tasks (%A - %m/%d/%Y)"
       end
 
     arr.each do |entry|
