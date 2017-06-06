@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170605102539) do
+ActiveRecord::Schema.define(version: 20170606004132) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,7 @@ ActiveRecord::Schema.define(version: 20170605102539) do
     t.datetime "updated_at",                            null: false
     t.string   "task_type",         default: "feature", null: false
     t.string   "message_timestamp"
+    t.integer  "task_id"
   end
 
   create_table "user_checkins", force: :cascade do |t|
