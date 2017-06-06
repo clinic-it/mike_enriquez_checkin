@@ -12,14 +12,6 @@ class CheckinsController < ApplicationController
 
   def show
     @checkin = Checkin.find_by_id params[:id]
-
-    respond_to do |format|
-      format.html
-      format.jpg do
-        @kit = IMGKit.new(render_to_string)
-        send_data(@kit.to_jpg, :type => 'image/jpeg', :disposition => 'inline')
-      end
-    end
   end
 
   def create
