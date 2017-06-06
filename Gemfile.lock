@@ -67,6 +67,11 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.0.5)
     debug_inspector (0.0.2)
+    draper (2.1.0)
+      actionpack (>= 3.0)
+      activemodel (>= 3.0)
+      activesupport (>= 3.0)
+      request_store (~> 1.0)
     erubis (2.7.0)
     execjs (2.7.0)
     faraday (0.10.1)
@@ -151,6 +156,7 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rake (12.0.0)
     rdoc (4.3.0)
+    request_store (1.3.2)
     sass (3.4.23)
     sass-rails (5.0.6)
       railties (>= 4.0.0, < 6)
@@ -206,6 +212,7 @@ DEPENDENCIES
   bootstrap (~> 4.0.0.alpha6)
   byebug
   coffee-rails (~> 4.1.0)
+  draper (= 2.1.0)
   figaro
   haml
   imgkit (= 1.6.1)

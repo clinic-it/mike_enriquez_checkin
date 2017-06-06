@@ -3,24 +3,22 @@
     %h2= user.username
 
   .card-block
-    - @checkin.tasks.where(:user => user).group_by(&:current).each_pair do |current, tasks_by_current|
+    - checkin.tasks.where(:user => user).group_by(&:current).each_pair do |current, tasks_by_current|
 
       %b= current ? 'What I will do today' : 'What I did yesterday'
       - tasks_by_current.group_by(&:project).each_pair do |project, tasks_by_project|
         %br= project.try(&:name)
         - tasks_by_project.each do |task|
-          - estimate = (task.estimate == 0) ? 'Unestimated' : task.estimate
-          - times_checkedin = task.current ? "[Times checked in: #{task.times_checked_in_current}]" : ''
-          = link_to "[#{task.task_type}][#{task.current_state}][#{estimate}]#{times_checkedin} #{task.title}", task.url
+          = link_to task, task.url
           %br
       %p= "Load: #{tasks_by_current.map(&:estimate).inject(0, &:+)}"
 
-    - blockers = @checkin.blockers.where(:user => user).first
+    - blockers = checkin.blockers.where(:user => user).first
     - unless blockers.nil?
       %b Blockers
       %p= blockers.description
 
-    - notes = @checkin.notes.where(:user => user).first
+    - notes = checkin.notes.where(:user => user).first
     - unless notes.nil?
       %b Notes
       %p= notes.description
