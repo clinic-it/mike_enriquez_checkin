@@ -15,6 +15,7 @@ class CheckinsController < ApplicationController
   end
 
   def create
+    raise params[:checkin][:yesterday].reject{|task| task == "0"}.map{|task| eval task}.inspect
     @yesterday_tasks = params[:yesterday_tasks]
     @current_tasks = params[:current_tasks]
     @current_date = Date.today
