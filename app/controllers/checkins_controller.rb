@@ -1,7 +1,9 @@
 class CheckinsController < ApplicationController
+
   require 'csv'
 
   before_action :init, :only => [:index, :create, :destroy]
+  after_action :generate_snapshot, :only => [:create]
 
 
   def index
@@ -10,6 +12,14 @@ class CheckinsController < ApplicationController
 
   def show
     @checkin = Checkin.find_by_id params[:id]
+
+    respond_to do |format|
+      format.html
+      format.jpg do
+        @kit = IMGKit.new(render_to_string)
+        send_data(@kit.to_jpg, :type => 'image/jpeg', :disposition => 'inline')
+      end
+    end
   end
 
   def create
@@ -18,6 +28,7 @@ class CheckinsController < ApplicationController
     @upcoming_tasks = params[:upcoming_tasks]
     @current_date = Date.today
     @upcoming_date = @current_date.friday? ? (@current_date + 3) : Date.tomorrow
+    @all_tasks = []
 
     current_tasks = CSV.read(@current_tasks.path, :headers => true).group_by{|task| task['Project Id']}
     upcoming_tasks = CSV.read(@upcoming_tasks.path, :headers => true).group_by{|task| task['Project Id']}
@@ -34,7 +45,9 @@ class CheckinsController < ApplicationController
       ]
     }
 
-    @client.chat_postMessage message_format
+    posted_checkin = @client.chat_postMessage message_format
+
+    self.update_message_timestamp @all_tasks, posted_checkin.ts
 
     redirect_to :root
   end
@@ -48,7 +61,9 @@ class CheckinsController < ApplicationController
       :ts => timestamp
     }
 
-    @client.chat_delete message_format
+    deleted_checkin = @client.chat_delete message_format
+
+    self.destroy_tasks_from_checkin deleted_checkin.ts
 
     redirect_to :root
   end
@@ -95,16 +110,18 @@ class CheckinsController < ApplicationController
         end
 
         if task_owners.include? @user.fullname
-          Task.create(
-            :checkin_id => @checkin.id,
-            :project_id => project.nil? ? 100000 : project.id,
-            :user_id => @user.id,
-            :title => task['Title'],
-            :url => task['URL'],
-            :current_state => task['Current State'],
-            :estimate => task['Estimate'],
-            :task_type => task['Type'],
-            :current => current_tasks
+          @all_tasks.push(
+            Task.create(
+              :checkin_id => @checkin.id,
+              :project_id => project.nil? ? 100000 : project.id,
+              :user_id => @user.id,
+              :title => task['Title'],
+              :url => task['URL'],
+              :current_state => task['Current State'],
+              :estimate => task['Estimate'],
+              :task_type => task['Type'],
+              :current => current_tasks
+            )
           )
 
           display_estimate = (task['Estimate'] == nil) ? 'Unestimated' : task['Estimate']
@@ -189,6 +206,17 @@ class CheckinsController < ApplicationController
     )
   end
 
+  def update_message_timestamp tasks, timestamp
+    tasks.each do |task|
+      task.update_attributes :message_timestamp => timestamp
+    end
+  end
+
+  def destroy_tasks_from_checkin timestamp
+    tasks = Task.where :message_timestamp => timestamp
+    tasks.destroy_all
+  end
+
 
 
   private
@@ -204,4 +232,23 @@ class CheckinsController < ApplicationController
     @client = Slack::Web::Client.new
     @channel = channel_hash[ENV['channel']]
   end
+
+  def generate_snapshot
+    kit = IMGKit.new render_to_string(:partial => 'checkins/user_checkin', :locals => {:@checkin => @checkin, :user => @user})
+    filename = "#{@user.username}_#{@checkin.checkin_date}"
+    save_path = Rails.root.join 'tmp', filename
+
+    File.open(save_path, 'wb') do |file|
+      file << kit.to_img(:jpg)
+    end
+
+    s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
+    obj = s3.bucket(ENV['bucketname']).object(filename)
+    obj.upload_file("tmp/#{filename}")
+
+    user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
+    user_checkin.screenshot_path = obj.public_url
+    user_checkin.save
+  end
+
 end
