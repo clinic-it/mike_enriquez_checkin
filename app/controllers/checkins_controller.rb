@@ -15,22 +15,22 @@ class CheckinsController < ApplicationController
   end
 
   def create
+    @yesterday_tasks = params[:yesterday_tasks]
     @current_tasks = params[:current_tasks]
-    @upcoming_tasks = params[:upcoming_tasks]
     @current_date = Date.today
     @upcoming_date = @current_date.friday? ? (@current_date + 3) : Date.tomorrow
     @all_tasks = []
 
+    yesterday_tasks = CSV.read(@yesterday_tasks.path, :headers => true).group_by{|task| task['Project Id']}
     current_tasks = CSV.read(@current_tasks.path, :headers => true).group_by{|task| task['Project Id']}
-    upcoming_tasks = CSV.read(@upcoming_tasks.path, :headers => true).group_by{|task| task['Project Id']}
 
     message_format = {
       :channel => @channel,
       :as_user => true,
       :text => "*#{@user.username} filed his daily checkin.*",
       :attachments => [
+        generate_attachments(yesterday_tasks, false),
         generate_attachments(current_tasks, true),
-        generate_attachments(upcoming_tasks, false),
         generate_blockers(params[:blockers]),
         generate_notes(params[:notes])
       ]
@@ -84,7 +84,7 @@ class CheckinsController < ApplicationController
       fields.push(
         :value =>
           if project.nil?
-            file_to_process = current_tasks ? @current_tasks.original_filename : @upcoming_tasks.original_filename
+            file_to_process = current_tasks ? @yesterday_tasks.original_filename : @current_tasks.original_filename
             "*Work on #{file_to_process.split('_')[0]}*"
           else
             "*Work on #{project.name}*"
