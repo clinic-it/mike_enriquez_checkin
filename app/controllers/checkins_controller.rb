@@ -1,5 +1,7 @@
 class CheckinsController < ApplicationController
 
+  require 'csv'
+  
   before_action :init, :only => [:index, :create, :destroy]
   after_action :generate_snapshot, :only => [:create]
 
