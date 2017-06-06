@@ -24,7 +24,7 @@ class CheckinsController < ApplicationController
     yesterday_tasks = CSV.read(@yesterday_tasks.path, :headers => true).group_by{|task| task['Project Id']}
     current_tasks = CSV.read(@current_tasks.path, :headers => true).group_by{|task| task['Project Id']}
 
-    message_format = {
+    @message_format = {
       :channel => @channel,
       :as_user => true,
       :text => "*#{@user.username} filed his daily checkin.*",
@@ -36,9 +36,8 @@ class CheckinsController < ApplicationController
       ]
     }
 
-    posted_checkin = @client.chat_postMessage message_format
 
-    self.update_message_timestamp @all_tasks, posted_checkin.ts
+    self.update_message_timestamp @all_tasks
 
     redirect_to :root
   end
@@ -47,14 +46,12 @@ class CheckinsController < ApplicationController
   def destroy
     timestamp = self.parse_timestamp params[:timestamp]
 
-    message_format = {
+    @message_format = {
       :channel => @channel,
       :ts => timestamp
     }
 
-    deleted_checkin = @client.chat_delete message_format
-
-    self.destroy_tasks_from_checkin deleted_checkin.ts
+    self.destroy_tasks_from_checkin
 
     redirect_to :root
   end
@@ -147,11 +144,12 @@ class CheckinsController < ApplicationController
   def generate_blockers blockers
     return if blockers.empty?
 
-    Blocker.create(
+    @blocker = Blocker.create(
       :checkin_id => @checkin.id,
       :user_id => @user.id,
       :description => blockers
     )
+
 
     fields = []
 
@@ -174,7 +172,7 @@ class CheckinsController < ApplicationController
   def generate_notes notes
     return if notes.empty?
 
-    Note.create(
+    @note = Note.create(
       :checkin_id => @checkin.id,
       :user_id => @user.id,
       :description => notes
@@ -198,15 +196,27 @@ class CheckinsController < ApplicationController
     )
   end
 
-  def update_message_timestamp tasks, timestamp
+  def update_message_timestamp tasks
+    @timestamp = @client.chat_postMessage(@message_format).ts
+
     tasks.each do |task|
-      task.update_attributes :message_timestamp => timestamp
+      task.update_attributes :message_timestamp => @timestamp
     end
+
+    @blocker.update_attributes :message_timestamp => @timestamp if @blocker
+    @note.update_attributes :message_timestamp => @timestamp if @note
   end
 
-  def destroy_tasks_from_checkin timestamp
+  def destroy_tasks_from_checkin
+    timestamp = @client.chat_delete(@message_format).ts
+
     tasks = Task.where :message_timestamp => timestamp
     tasks.destroy_all
+
+    blocker = Blocker.where(:message_timestamp => timestamp).try :destroy_all
+    note = Note.where(:message_timestamp => timestamp).try :destroy_all
+    user_checkin =
+      UserCheckin.where(:message_timestamp => timestamp).try :destroy_all
   end
 
 
@@ -240,6 +250,7 @@ class CheckinsController < ApplicationController
 
     user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
     user_checkin.screenshot_path = obj.public_url
+    user_checkin.message_timestamp = @timestamp
     user_checkin.save
   end
 
