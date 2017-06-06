@@ -119,7 +119,8 @@ class CheckinsController < ApplicationController
               :current_state => task['Current State'],
               :estimate => task['Estimate'],
               :task_type => task['Type'],
-              :current => current_tasks
+              :current => current_tasks,
+              :task_id => task['Id']
             )
           )
 
