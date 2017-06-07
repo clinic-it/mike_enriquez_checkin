@@ -2,15 +2,22 @@
 .card
   .card-header
     %h3.text-center= @user.username
-
+    %ul.nav.nav-tabs.card-header-tabs
+      %li.nav-item
+        %a.card-tabs.nav-link.active{:href => '#active', :data => {:toggle => 'tab'}} Weekly Load
+      %li.nav-item
+        %a.card-tabs.nav-link{:href => '#inactive', :data => {:toggle => 'tab'}} Daily Load
   .card-block
-    %h3 Weekly Load
-    - previous = @user.tasks_by_week.reverse_each.map{|week, tasks| ["#{Task.week_dates(week)}", "#{tasks.reject{|task| !task.current}.sum{|task| task.estimate ? task.estimate : 0}}"]}
-    - current = @user.tasks_by_week.reverse_each.map{|week, tasks| ["#{Task.week_dates(week)}", "#{tasks.reject{|task| task.current}.sum{|task| task.estimate ? task.estimate : 0}}"]}
-    = line_chart [{:name => 'previous', :data => previous}, {:name => 'current', :data => current}]
+    .tab-content
+      #active.tab-pane.fade.in.show.active
+        %h3 Weekly Load
+        - previous = @user.tasks_by_week.map{|week, tasks| ["#{Task.week_dates(week)}", "#{tasks.reject{|task| !task.current}.sum{|task| task.estimate ? task.estimate : 0}}"]}
+        - current = @user.tasks_by_week.map{|week, tasks| ["#{Task.week_dates(week)}", "#{tasks.reject{|task| task.current}.sum{|task| task.estimate ? task.estimate : 0}}"]}
+        = line_chart [{:name => 'previous', :data => previous}, {:name => 'current', :data => current}]
 
-  .card-block
-    %h3 Daily Load
-    - previous = @user.tasks.where(:current => false).group_by(&:checkin).reject{|entry| entry.nil?}.map{|checkin, tasks| [checkin.checkin_date, "#{tasks.sum{|task| task.estimate ? task.estimate : 0}}"]}
-    - current = @user.tasks.where(:current => true).group_by(&:checkin).reject{|entry| entry.nil?}.map{|checkin, tasks| [checkin.checkin_date,  "#{tasks.sum{|task| task.estimate ? task.estimate : 0}}"]}
-    = line_chart [{:name => 'previous', :data => previous}, {:name => 'current', :data => current}]
+
+      #inactive.tab-pane.fade.in{:role => 'tabpanel'}
+        %h3 Daily Load
+        - previous = @user.tasks.where(:current => false).group_by(&:checkin).reject{|entry| entry.nil?}.map{|checkin, tasks| [checkin.checkin_date, "#{tasks.sum{|task| task.estimate ? task.estimate : 0}}"]}
+        - current = @user.tasks.where(:current => true).group_by(&:checkin).reject{|entry| entry.nil?}.map{|checkin, tasks| [checkin.checkin_date,  "#{tasks.sum{|task| task.estimate ? task.estimate : 0}}"]}
+        = line_chart [{:name => 'previous', :data => previous}, {:name => 'current', :data => current}]
