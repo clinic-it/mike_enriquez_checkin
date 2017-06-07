@@ -7,4 +7,6 @@ Rails.application.routes.draw do
   resources :users, :only => [:show]
 
   delete 'checkins' => 'checkins#destroy'
+  post 'csv_checkin' => 'checkins#csv_checkin'
+  
 end

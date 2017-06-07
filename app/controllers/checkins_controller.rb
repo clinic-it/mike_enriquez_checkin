@@ -2,8 +2,8 @@ class CheckinsController < ApplicationController
 
   require 'csv'
 
-  before_action :init, :only => [:index, :create, :destroy]
-  after_action :generate_snapshot, :only => [:create]
+  before_action :init, :only => [:index, :create, :destroy, :csv_checkin]
+  after_action :generate_snapshot, :only => [:create, :csv_checkin]
 
 
   def index
@@ -16,11 +16,27 @@ class CheckinsController < ApplicationController
 
   def create
     raise params[:checkin][:yesterday].reject{|task| task == "0"}.map{|task| eval task}.inspect
+
+    redirect_to :root
+  end
+
+
+  def destroy
+    timestamp = self.parse_timestamp params[:timestamp]
+
+    @message_format = {
+      :channel => @channel,
+      :ts => timestamp
+    }
+
+    self.destroy_tasks_from_checkin
+
+    redirect_to :root
+  end
+
+  def csv_checkin
     @yesterday_tasks = params[:yesterday_tasks]
     @current_tasks = params[:current_tasks]
-    @current_date = Date.today
-    @yesterday_date = @current_date.monday? ? (@current_date - 3) : Date.yesterday
-    @all_tasks = []
 
     yesterday_tasks = CSV.read(@yesterday_tasks.path, :headers => true).group_by{|task| task['Project Id']}
     current_tasks = CSV.read(@current_tasks.path, :headers => true).group_by{|task| task['Project Id']}
@@ -37,22 +53,7 @@ class CheckinsController < ApplicationController
       ]
     }
 
-
     self.update_message_timestamp @all_tasks
-
-    redirect_to :root
-  end
-
-
-  def destroy
-    timestamp = self.parse_timestamp params[:timestamp]
-
-    @message_format = {
-      :channel => @channel,
-      :ts => timestamp
-    }
-
-    self.destroy_tasks_from_checkin
 
     redirect_to :root
   end
@@ -235,6 +236,9 @@ class CheckinsController < ApplicationController
     @checkin = Checkin.find_or_create_by :checkin_date => Date.today
     @client = Slack::Web::Client.new
     @channel = channel_hash[ENV['channel']]
+    @current_date = Date.today
+    @yesterday_date = @current_date.monday? ? (@current_date - 3) : Date.yesterday
+    @all_tasks = []
   end
 
   def generate_snapshot

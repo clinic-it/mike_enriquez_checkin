@@ -5,7 +5,7 @@
     .card-block
 
 
-      = form_tag :checkins, :multipart => true, :method => :post do
+      = form_tag csv_checkin_path, :multipart => true, :method => :post do
         %table
           %tr
             %td= label_tag :name
