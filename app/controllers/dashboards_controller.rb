@@ -7,7 +7,4 @@ class DashboardsController < ApplicationController
     @projects = pivotal.projects
   end
 
-  def create
-  end
-
 end

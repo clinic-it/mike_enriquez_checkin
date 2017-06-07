@@ -11,7 +11,7 @@
         - tasks_by_project.each do |task|
           = link_to task, task.url
           %br
-      %p= "Load: #{tasks_by_current.map(&:estimate).inject(0, &:+)}"
+      %p= "Load: #{tasks_by_current.reject{|entry| entry.estimate.nil?}.map(&:estimate).inject(0, &:+)}"
 
     - blockers = @checkin.blockers.where(:user => user).first
     - unless blockers.nil?

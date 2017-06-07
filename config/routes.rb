@@ -8,5 +8,5 @@ Rails.application.routes.draw do
 
   delete 'checkins' => 'checkins#destroy'
   post 'csv_checkin' => 'checkins#csv_checkin'
-  
+
 end

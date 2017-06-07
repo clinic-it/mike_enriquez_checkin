@@ -9,29 +9,27 @@
               - unless project.iterations(:scope => 'current_backlog').length == 0
                 %h3= project.name
                 - project.iterations(:scope => 'current_backlog').each do |iteration|
-                  -# = f.collection_check_boxes :yesterday, iteration.stories, :id, :name do |b|
-                  -#   .form-group
-                  -#     = b.label do
-                  -#       = b.check_box
-                  -#       = b.text
                   - iteration.stories.each do |story|
                     %label.checkbox
-                      = f.check_box :yesterday, {:multiple => true}, {:id => story.id, :url => story.url}
+                      = f.check_box :yesterday, {:multiple => true},
+                        {:project_id => story.project_id,:title => story.name, :url => story.url, :current_state => story.current_state, :estimate => story.estimate, :task_type => story.story_type, :task_id => story.id}
                       = story.name
+                    %br
                 %hr
 
-        -# .card
-        -#   .card-block
-        -#     .card-title What I will do today
-        -#     - @projects.each do |project|
-        -#       - unless project.iterations(:scope => 'current_backlog').length == 0
-        -#         %h3= project.name
-        -#         - project.iterations(:scope => 'current_backlog').each do |iteration|
-        -#           = f.collection_check_boxes :today, iteration.stories, :id, :name do |b|
-        -#             .form-group
-        -#               = b.label do
-        -#                 = b.check_box
-        -#                 = b.text
-        -#         %hr
+        .card
+          .card-block
+            .card-title What I will do today
+            - @projects.each do |project|
+              - unless project.iterations(:scope => 'current_backlog').length == 0
+                %h3= project.name
+                - project.iterations(:scope => 'current_backlog').each do |iteration|
+                  - iteration.stories.each do |story|
+                    %label.checkbox
+                      = f.check_box :today, {:multiple => true},
+                        {:project_id => story.project_id,:title => story.name, :url => story.url, :current_state => story.current_state, :estimate => story.estimate, :task_type => story.story_type, :task_id => story.id}
+                      = story.name
+                    %br
+                %hr
 
       = f.submit

@@ -15,7 +15,23 @@ class CheckinsController < ApplicationController
   end
 
   def create
-    raise params[:checkin][:yesterday].reject{|task| task == "0"}.map{|task| eval task}.inspect
+    @user = User.find_by_id 3
+    yesterday_tasks = array_string_to_hash params[:checkin][:yesterday]
+    current_tasks = array_string_to_hash params[:checkin][:today]
+
+    @message_format = {
+      :channel => @channel,
+      :as_user => true,
+      :text => "*#{@user.username} filed his daily checkin.*",
+      :attachments => [
+        generate_attachments(yesterday_tasks, false),
+        generate_attachments(current_tasks, true),
+        # generate_blockers(params[:blockers]),
+        # generate_notes(params[:notes])
+      ]
+    }
+
+    self.update_message_timestamp @all_tasks
 
     redirect_to :root
   end
@@ -46,8 +62,8 @@ class CheckinsController < ApplicationController
       :as_user => true,
       :text => "*#{@user.username} filed his daily checkin.*",
       :attachments => [
-        generate_attachments(yesterday_tasks, false),
-        generate_attachments(current_tasks, true),
+        generate_attachments_from_csv(yesterday_tasks, false),
+        generate_attachments_from_csv(current_tasks, true),
         generate_blockers(params[:blockers]),
         generate_notes(params[:notes])
       ]
@@ -67,6 +83,75 @@ class CheckinsController < ApplicationController
   end
 
   def generate_attachments arr, current_tasks
+    estimate = 0
+    fields = []
+
+    pretext =
+      if current_tasks
+        @current_date.strftime "Current Tasks (%A - %m/%d/%Y)"
+      else
+        @yesterday_date.strftime "Yesterday's Tasks (%A - %m/%d/%Y)"
+      end
+
+    arr.each do |entry|
+      project = Project.find_by_pivotal_id entry[0].to_i
+
+      fields.push(
+        :value =>
+          if project.nil?
+            'Work on tasks'
+          else
+            "*Work on #{project.name}*"
+          end
+      )
+
+      project_tasks = entry[1]
+
+      project_tasks.each do |task|
+        @all_tasks.push(
+          new_task = Task.create(
+            :checkin_id => @checkin.id,
+            :project_id => project.nil? ? 100000 : project.id,
+            :user_id => @user.id,
+            :title => task[:title],
+            :url => task[:url],
+            :current_state => task[:current_state],
+            :estimate => task[:estimate],
+            :task_type => task[:task_type],
+            :current => current_tasks,
+            :task_id => task[:task_id]
+          )
+        )
+
+        display_estimate = (task[:estimate] == nil) ? 'Unestimated' : task[:estimate]
+        times_checkedin = new_task.current ? "[Times checked in: #{new_task.times_checked_in_current}]" : ''
+
+        fields.push(
+          :value => "<#{task[:url]}|•[#{task[:task_type]}][#{task[:current_state]}][#{display_estimate}]#{times_checkedin} #{task[:title]}>"
+        )
+
+        estimate += task[:estimate].to_i
+      end
+
+    end
+
+    fields.push(
+      {
+        :title => "Load: #{estimate}"
+      }
+    )
+
+    return(
+      {
+        :pretext => pretext,
+        :fields => fields,
+        :color => '#36a64f',
+        :mrkdwn_in => ['fields']
+      }
+    )
+  end
+
+  def generate_attachments_from_csv arr, current_tasks
     estimate = 0
     fields = []
 
@@ -258,6 +343,24 @@ class CheckinsController < ApplicationController
     user_checkin.screenshot_path = obj.public_url
     user_checkin.message_timestamp = @timestamp
     user_checkin.save
+  end
+
+  def array_string_to_hash array
+    tasks = array.reject{|task| task == "0"}.map{|task| eval task}
+    project_ids = tasks.map{|entry| entry[:project_id]}.uniq
+
+    return_value = []
+    project_ids.each do |project_id|
+      return_value.push(
+        [
+          project_id,
+          tasks.select{|entry| entry[:project_id] == project_id}
+        ]
+      )
+
+    end
+
+    return_value
   end
 
 end
