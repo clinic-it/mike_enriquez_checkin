@@ -11,12 +11,16 @@ class Checkin < ActiveRecord::Base
     -> { where('checkin_date BETWEEN ? AND ?', 1.month.ago.beginning_of_day, Date.today.end_of_day) }
 
 
-  def self.submitted_checkins
-    Checkin.last.user_checkins.map(&:user_id).uniq.count
+  def submitted_checkins
+    self.user_checkins.map(&:user_id).uniq.count
   end
 
-  def self.pending_checkins
-    User.all.count - Checkin.submitted_checkins
+  def pending_checkins
+    User.all.count - self.submitted_checkins
+  end
+
+  def users_with_checkin
+    self.user_checkins.map(&:user).uniq
   end
 
   def average_load

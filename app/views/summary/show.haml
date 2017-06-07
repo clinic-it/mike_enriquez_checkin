@@ -1,3 +1,30 @@
-%p
-  = @today.id
-  = @yesterday.id
+.col-md-8.row.offset-md-2
+  .card-deck.col-md-6
+    .card
+      .card-header.text-center Average
+      .card-block.row
+        %h4.col= @today.average_load
+        .col= @today.average_load - @yesterday.average_load
+
+    .card
+      .card-header.text-center Low
+      .card-block.row
+        %h4.col= @today.lowest_load
+        .col= @today.lowest_load - @yesterday.lowest_load
+
+
+    .card
+      .card-header.text-center High
+      .card-block.row
+        %h4.col= @today.highest_load
+        .col= @today.highest_load - @yesterday.highest_load
+
+  .col-md-6
+    .card
+      .card-header.text-center Status
+      .card-block
+        %p= "#{@today.submitted_checkins} SUBMITTED"
+        %p= "#{@today.pending_checkins} LEFT"
+
+  .col-md-12
+    = column_chart @chart_data, :ytitle => 'Load'
