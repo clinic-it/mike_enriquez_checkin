@@ -7,4 +7,7 @@ class Checkin < ActiveRecord::Base
   has_many :blockers, :dependent => :destroy
   has_many :user_checkins, :dependent => :destroy
 
+  scope :span_previous_month,
+    -> { where('checkin_date BETWEEN ? AND ?', 1.month.ago.beginning_of_day, Date.today.end_of_day) }
+
 end

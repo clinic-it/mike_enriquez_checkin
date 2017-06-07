@@ -5,6 +5,7 @@ class Task < ActiveRecord::Base
   belongs_to :checkin
 
   scope :current, -> { where :current => true }
+  scope :previous, -> { where :current => false }
 
   def week
     self.created_at.strftime '%W'
