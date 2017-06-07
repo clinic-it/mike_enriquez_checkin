@@ -40,6 +40,9 @@ gem 'aws-sdk', '2.9.29'
 # Used to create charts
 gem 'chartkick', '2.2.4'
 
+# Used for icons
+gem 'font-awesome-rails', '4.5.0.1'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

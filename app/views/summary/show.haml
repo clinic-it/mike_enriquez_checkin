@@ -1,23 +1,38 @@
-.col-md-8.row.offset-md-2
+.col-md-12.row
   .card-deck.col-md-6
     .card
       .card-header.text-center Average
       .card-block.row
-        %h4.col= @today.average_load
-        .col= @today.average_load - @yesterday.average_load
+        %h3.col= @today.average_load
+        .col
+          - value = @today.average_load - @yesterday.average_load
+          .col-md-12
+            = icon_tag value
+          .col-md-12
+            = value
 
     .card
       .card-header.text-center Low
       .card-block.row
         %h4.col= @today.lowest_load
-        .col= @today.lowest_load - @yesterday.lowest_load
+        .col
+          - value = @today.lowest_load - @yesterday.lowest_load
+          .col-md-12
+            = icon_tag value
+          .col-md-12
+            = value
 
 
     .card
       .card-header.text-center High
       .card-block.row
         %h4.col= @today.highest_load
-        .col= @today.highest_load - @yesterday.highest_load
+        .col
+          - value = @today.highest_load - @yesterday.highest_load
+          .col-md-12
+            = icon_tag value
+          .col-md-12
+            = value
 
   .col-md-6
     .card
