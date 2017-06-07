@@ -6,6 +6,8 @@ class Task < ActiveRecord::Base
 
   scope :current, -> { where :current => true }
   scope :previous, -> { where :current => false }
+  scope :current_tasks_1month_ago,
+    -> { current.where('tasks.created_at BETWEEN ? AND ?', 1.month.ago.beginning_of_day, Date.today.end_of_day) }
 
   def week
     self.created_at.strftime '%W'
