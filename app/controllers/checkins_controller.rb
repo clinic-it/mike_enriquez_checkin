@@ -11,6 +11,15 @@ class CheckinsController < ApplicationController
 
   def show
     @checkin = Checkin.find_by_id params[:id]
+
+    respond_to do |format|
+      format.html
+      format.jpg do
+        # kit = IMGKit.new render_to_string(:layout => 'layouts/generated_image.haml',:partial => 'checkins/user_checkin', :locals => {:@checkin => @checkin, :user => User.find_by_id(3)})
+        # kit.stylesheets << "#{Rails.root}/app/assets/stylesheets/application.scss"
+        # send_data(kit.to_jpg, :type => "image/jpeg", :disposition => 'inline')
+      end
+    end
   end
 
   def create
@@ -194,6 +203,7 @@ class CheckinsController < ApplicationController
       task.update_attributes :message_timestamp => @timestamp
     end
 
+    @user_checkin.update_attributes :message_timestamp => @timestamp
     @blocker.update_attributes :message_timestamp => @timestamp if @blocker
     @note.update_attributes :message_timestamp => @timestamp if @note
   end
@@ -228,6 +238,7 @@ class CheckinsController < ApplicationController
 
   def generate_snapshot
     kit = IMGKit.new render_to_string(:partial => 'checkins/user_checkin', :locals => {:@checkin => @checkin, :user => @user})
+    kit.stylesheets << "#{Rails.root}/app/assets/stylesheets/application.scss"
     filename = "#{@user.username}_#{@checkin.checkin_date}"
     save_path = Rails.root.join 'tmp', filename
 
@@ -236,7 +247,7 @@ class CheckinsController < ApplicationController
     end
 
     s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
-    obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}")
+    obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}_#{DateTime.now.strftime('%N')}")
     obj.upload_file(save_path)
 
     @user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
@@ -248,14 +259,14 @@ class CheckinsController < ApplicationController
   end
 
   def send_slack_message
-    raise
     @message_format = {
       :channel => @channel,
       :as_user => true,
       :text => "*#{@user.username} filed his daily checkin.*",
       :attachments => [
         :title => Date.today.strftime('%B %d, %Y'),
-        :image_url => @user_checkin.screenshot_path
+        :image_url => @user_checkin.screenshot_path,
+        :color => '#36a64f'
       ]
     }
 
