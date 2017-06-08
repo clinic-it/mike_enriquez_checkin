@@ -33,6 +33,12 @@ gem 'kaminari'
 gem 'imgkit', '1.6.1'
 gem 'wkhtmltoimage-binary', '0.12.4'
 
+# Used for pdf report generation
+gem 'wicked_pdf', '1.1.0'
+gem 'wkhtmltopdf-binary', '0.12.3.1'
+gem 'rmagick', '2.16.0', :require => 'RMagick'
+gem 'grim', '1.3.2'
+
 # Used to upload image to s3
 gem 'paperclip', '5.1.0'
 gem 'aws-sdk', '2.9.29'

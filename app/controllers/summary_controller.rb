@@ -1,4 +1,7 @@
 class SummaryController < ApplicationController
+
+  require 'RMagick'
+
   def show
     @today = Checkin.last
     @yesterday = Checkin.offset(1).last
@@ -13,10 +16,27 @@ class SummaryController < ApplicationController
     @checkin = Checkin.last
     respond_to do |format|
       format.html
-      format.jpg do
-        kit = IMGKit.new render_to_string
-        send_data(kit.to_jpg, :type => "image/jpeg", :disposition => 'inline')
-      end
+      format.pdf {
+        render(
+          :pdf => @checkin.checkin_date.to_s,
+          :save_to_file => Rails.root.join('tmp', "#{@checkin.checkin_date.to_s}"),
+          :save_only => true
+        )
+        pdf_file_name = Rails.root.join('tmp', "#{@checkin.checkin_date.to_s}")
+        original_pdf = File.open(pdf_file_name, 'rb').read
+        # raise pdf_file_name.inspect
+        image = Magick::Image::from_blob(original_pdf) do
+          self.format = 'PDF'
+          self.quality = 100
+          self.density = 144
+        end
+        image[0].format = 'JPG'
+        image[0].to_blob
+
+        image[0].write(Rails.root.join('tmp', "#{@checkin.checkin_date.to_s}.jpg"))
+        send_file Rails.root.join('tmp', "#{@checkin.checkin_date.to_s}.jpg"), type: "image/gif", disposition: "inline"
+      }
     end
+
   end
 end
