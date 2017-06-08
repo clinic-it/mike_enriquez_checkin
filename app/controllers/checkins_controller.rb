@@ -5,7 +5,6 @@ class CheckinsController < ApplicationController
   before_action :init, :only => [:index, :create, :destroy]
   after_action :generate_snapshot, :only => [:create]
 
-
   def index
     @checkins = Checkin.all.order(:checkin_date => :desc).page params[:page]
   end
@@ -24,20 +23,11 @@ class CheckinsController < ApplicationController
     yesterday_tasks = CSV.read(@yesterday_tasks.path, :headers => true).group_by{|task| task['Project Id']}
     current_tasks = CSV.read(@current_tasks.path, :headers => true).group_by{|task| task['Project Id']}
 
-    @message_format = {
-      :channel => @channel,
-      :as_user => true,
-      :text => "*#{@user.username} filed his daily checkin.*",
-      :attachments => [
-        generate_attachments(yesterday_tasks, false),
-        generate_attachments(current_tasks, true),
-        generate_blockers(params[:blockers]),
-        generate_notes(params[:notes])
-      ]
-    }
+    generate_attachments yesterday_tasks, false
+    generate_attachments current_tasks, true
+    generate_blockers params[:blockers]
+    generate_notes params[:notes]
 
-
-    self.update_message_timestamp @all_tasks
 
     redirect_to :root
   end
@@ -249,10 +239,27 @@ class CheckinsController < ApplicationController
     obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}")
     obj.upload_file(save_path)
 
-    user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
-    user_checkin.screenshot_path = obj.public_url
-    user_checkin.message_timestamp = @timestamp
-    user_checkin.save
+    @user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
+    @user_checkin.screenshot_path = obj.public_url
+    @user_checkin.message_timestamp = @timestamp
+    @user_checkin.save
+
+    send_slack_message
+  end
+
+  def send_slack_message
+    raise
+    @message_format = {
+      :channel => @channel,
+      :as_user => true,
+      :text => "*#{@user.username} filed his daily checkin.*",
+      :attachments => [
+        :title => Date.today.strftime('%B %d, %Y'),
+        :image_url => @user_checkin.screenshot_path
+      ]
+    }
+
+    self.update_message_timestamp @all_tasks
   end
 
 end
