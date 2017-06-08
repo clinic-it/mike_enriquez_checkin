@@ -3,6 +3,8 @@
     .navbar-brand= link_to 'Mike Enriquez Checkin', :root
     %ul.nav.navbar-nav
       %li.nav-item
+        .nav-link= link_to 'Daily Summary', summary_path
+      %li.nav-item
         .nav-link= link_to 'Index', checkins_path
       %li.nav-item.dropdown
         %a#navbarDropdownMenuLink.nav-link.dropdown-toggle{"data-toggle" => "dropdown", :href => '#'}

@@ -26,7 +26,9 @@ class Checkin < ActiveRecord::Base
   def average_load
     user_count = self.tasks.map(&:user_id).uniq.count
 
-    self.tasks.current.sum(:estimate) / user_count.to_f
+    value = self.tasks.current.sum(:estimate) / user_count.to_f
+
+    return value.nan? ? 0 : value
   end
 
   def lowest_load
@@ -37,7 +39,7 @@ class Checkin < ActiveRecord::Base
       task_load.push tasks.sum(&:estimate)
     end
 
-    task_load.sort.first
+    return task_load.sort.first.nil? ? 0 : task_load.sort.first
   end
 
   def highest_load
@@ -48,7 +50,7 @@ class Checkin < ActiveRecord::Base
       task_load.push tasks.sum(&:estimate)
     end
 
-    task_load.sort.first
+    return task_load.sort.reverse.first.nil? ? 0 : task_load.sort.reverse.first
   end
 
 end

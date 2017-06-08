@@ -5,7 +5,6 @@ class CheckinsController < ApplicationController
   before_action :init, :only => [:index, :create, :destroy]
   after_action :generate_snapshot, :only => [:create]
 
-
   def index
     @checkins = Checkin.all.order(:checkin_date => :desc).page params[:page]
   end
@@ -24,22 +23,13 @@ class CheckinsController < ApplicationController
     yesterday_tasks = CSV.read(@yesterday_tasks.path, :headers => true).group_by{|task| task['Project Id']}
     current_tasks = CSV.read(@current_tasks.path, :headers => true).group_by{|task| task['Project Id']}
 
-    @message_format = {
-      :channel => @channel,
-      :as_user => true,
-      :text => "*#{@user.username} filed his daily checkin.*",
-      :attachments => [
-        generate_attachments(yesterday_tasks, false),
-        generate_attachments(current_tasks, true),
-        generate_blockers(params[:blockers]),
-        generate_notes(params[:notes])
-      ]
-    }
+    generate_attachments yesterday_tasks, false
+    generate_attachments current_tasks, true
+    generate_blockers params[:blockers]
+    generate_notes params[:notes]
 
 
-    self.update_message_timestamp @all_tasks
-
-    redirect_to :root
+    redirect_to summary_path
   end
 
 
@@ -204,6 +194,7 @@ class CheckinsController < ApplicationController
       task.update_attributes :message_timestamp => @timestamp
     end
 
+    @user_checkin.update_attributes :message_timestamp => @timestamp
     @blocker.update_attributes :message_timestamp => @timestamp if @blocker
     @note.update_attributes :message_timestamp => @timestamp if @note
   end
@@ -237,22 +228,68 @@ class CheckinsController < ApplicationController
   end
 
   def generate_snapshot
-    kit = IMGKit.new render_to_string(:partial => 'checkins/user_checkin', :locals => {:@checkin => @checkin, :user => @user})
     filename = "#{@user.username}_#{@checkin.checkin_date}"
     save_path = Rails.root.join 'tmp', filename
 
+    action_controller_instance = ActionController::Base.new.tap { |controller|
+      def controller.params
+        {:format => 'pdf'}
+      end
+    }
+
+    pdf = WickedPdf.new.pdf_from_string(
+      action_controller_instance.render_to_string(
+        :action => 'create',
+        :template => 'checkins/user_checkin',
+        :layout => 'layouts/generated_pdf',
+        :locals => { :@checkin => @checkin, :user => @user }
+      ),
+      :viewport_size => '1280x1024',
+    )
+
+    save_path = Rails.root.join 'tmp/', filename
+
     File.open(save_path, 'wb') do |file|
-      file << kit.to_img(:jpg)
+      file << pdf
     end
 
+    original_pdf = File.open(save_path, 'rb').read
+
+    image = Magick::Image::from_blob(original_pdf) do
+      self.format = 'PDF'
+      self.quality = 100
+      self.density = 144
+    end
+    image[0].format = 'JPG'
+    image[0].to_blob
+
+    image[0].write(save_path)
+
     s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
-    obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}")
+    obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}_#{DateTime.now.strftime('%N')}")
     obj.upload_file(save_path)
 
-    user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
-    user_checkin.screenshot_path = obj.public_url
-    user_checkin.message_timestamp = @timestamp
-    user_checkin.save
+    @user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
+    @user_checkin.screenshot_path = obj.public_url
+    @user_checkin.message_timestamp = @timestamp
+    @user_checkin.save
+
+    send_slack_message
+  end
+
+  def send_slack_message
+    @message_format = {
+      :channel => @channel,
+      :as_user => true,
+      :text => "*#{@user.username} filed his daily checkin.*",
+      :attachments => [
+        :title => Date.today.strftime('%B %d, %Y'),
+        :image_url => @user_checkin.screenshot_path,
+        :color => '#36a64f'
+      ]
+    }
+
+    self.update_message_timestamp @all_tasks
   end
 
 end
