@@ -16,4 +16,14 @@ module ApplicationHelper
     content_tag :i, nil, options
   end
 
+  def table_row_class type
+    if type == 'feature'
+      'table-success'
+    elsif type == 'bug'
+      'table-danger'
+    else
+      'table-active'
+    end
+  end
+
 end

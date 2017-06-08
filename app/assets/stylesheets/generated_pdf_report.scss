@@ -1,28 +1,29 @@
 @import 'bootstrap';
-// @import 'bootstrap_override';
-// // @import 'report';
-// //
-// //
-// // .card-deck {
-// //   display: -webkit-box;
-// //   display: -ms-flexbox;
-// //   display: flex;
-// //   page-break-inside: avoid;
-// // }
-// //
-// // .card {
-// //   width: 100%;
-// // }
-// //
-// // .card-header {
-// //   padding: 5px;
-// //   height: 30px;
-// //   background-color: #ff671f !important;
-// // }
-// //
-// // .report-header {
-// //   font-size: 10px;
-// // }
+// @import 'font-awesome';
+
 body {
-  font-size: 75%;
+  font-size: 50%;
+}
+
+.feature{
+  color: green;
+}
+
+.bug {
+  color: red;
+}
+
+.chore {
+  color: grey;
+}
+
+.table-sm {
+  width: 100%;
+}
+
+
+.column-estimate,
+.column-status,
+.column-checkin-count {
+  width: 5%;
 }

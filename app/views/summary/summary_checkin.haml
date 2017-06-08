@@ -1,22 +1,35 @@
 .col-sm-12
-  %h3= "Checkin for #{@checkin.checkin_date.strftime('%B %d, %Y')}"
-
+  .col-sm-12.row
+    .col
+      %h5= "Checkin for #{@checkin.checkin_date.strftime('%B %d, %Y')}"
+    .col
+      %i.fa.fa-square.feature Feature
+      %i.fa.fa-square.bug Bug
+      %i.fa.fa-square.chore Chore
   - @checkin.tasks.group_by(&:user).each_pair do |user, tasks_by_user|
     .card
-      .card-header
-        %h2= user.username
+      .card-header.text-center
+        %h5= user.username
 
       .card-block
         - tasks_by_user.group_by(&:current).each_pair do |current, tasks_by_current|
+          %b= current ? 'What I will do today' : 'What I did yesterday'
           %br
-          %b= current ? 'What I did today' : 'What I will do tomorrow'
           - tasks_by_current.group_by(&:project).each_pair do |project, tasks_by_project|
-            %br= project.try(&:name)
-            - tasks_by_project.each do |task|
-              - estimate = (task.estimate == 0) ? 'Unestimated' : task.estimate
-              - times_checkedin = task.current ? "[Times checked in: #{task.times_checked_in_current}]" : ''
-              = link_to "[#{task.task_type}][#{task.current_state}][#{estimate}]#{times_checkedin} #{task.title}", task.url
-              %br
+            %b= project.try(&:name)
+            %table.table-sm
+              %th.column-estimate.text-center Estimate
+              %th.column-status Status
+              %th.column-title Title
+              %th.column-checkin-count.text-center Count
+              %tbody
+              - tasks_by_project.each do |task|
+                %tr{:class => table_row_class(task.task_type)}
+                  - estimate = (task.estimate == 0) ? 'Unestimated' : task.estimate
+                  %td.text-center= estimate
+                  %td= task.current_state.humanize
+                  %td= task.title
+                  %td.text-center= task.times_checked_in_current
           %p= "Load: #{tasks_by_current.map(&:estimate).inject(0, &:+)}"
 
         - blockers = @checkin.blockers.where(:user => user).first

@@ -11,15 +11,6 @@ class CheckinsController < ApplicationController
 
   def show
     @checkin = Checkin.find_by_id params[:id]
-
-    respond_to do |format|
-      format.html
-      format.jpg do
-        # kit = IMGKit.new render_to_string(:layout => 'layouts/generated_image.haml',:partial => 'checkins/user_checkin', :locals => {:@checkin => @checkin, :user => User.find_by_id(3)})
-        # kit.stylesheets << "#{Rails.root}/app/assets/stylesheets/application.scss"
-        # send_data(kit.to_jpg, :type => "image/jpeg", :disposition => 'inline')
-      end
-    end
   end
 
   def create
@@ -38,7 +29,7 @@ class CheckinsController < ApplicationController
     generate_notes params[:notes]
 
 
-    redirect_to :root
+    redirect_to summary_path
   end
 
 
@@ -237,14 +228,42 @@ class CheckinsController < ApplicationController
   end
 
   def generate_snapshot
-    kit = IMGKit.new render_to_string(:partial => 'checkins/user_checkin', :locals => {:@checkin => @checkin, :user => @user})
-    kit.stylesheets << "#{Rails.root}/app/assets/stylesheets/application.scss"
     filename = "#{@user.username}_#{@checkin.checkin_date}"
     save_path = Rails.root.join 'tmp', filename
 
+    action_controller_instance = ActionController::Base.new.tap { |controller|
+      def controller.params
+        {:format => 'pdf'}
+      end
+    }
+
+    pdf = WickedPdf.new.pdf_from_string(
+      action_controller_instance.render_to_string(
+        :action => 'create',
+        :template => 'checkins/user_checkin',
+        :layout => 'layouts/generated_pdf',
+        :locals => { :@checkin => @checkin, :user => @user }
+      ),
+      :viewport_size => '1280x1024',
+    )
+
+    save_path = Rails.root.join 'tmp/', filename
+
     File.open(save_path, 'wb') do |file|
-      file << kit.to_img(:jpg)
+      file << pdf
     end
+
+    original_pdf = File.open(save_path, 'rb').read
+
+    image = Magick::Image::from_blob(original_pdf) do
+      self.format = 'PDF'
+      self.quality = 100
+      self.density = 144
+    end
+    image[0].format = 'JPG'
+    image[0].to_blob
+
+    image[0].write(save_path)
 
     s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
     obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}_#{DateTime.now.strftime('%N')}")
