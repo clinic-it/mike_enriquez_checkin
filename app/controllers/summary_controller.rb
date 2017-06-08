@@ -16,7 +16,7 @@ class SummaryController < ApplicationController
     @checkin = Checkin.last
     respond_to do |format|
       format.html
-      format.pdf {
+      format.jpg {
         render(
           :pdf => @checkin.checkin_date.to_s,
           :save_to_file => Rails.root.join('tmp', "#{@checkin.checkin_date.to_s}"),
@@ -24,7 +24,7 @@ class SummaryController < ApplicationController
         )
         pdf_file_name = Rails.root.join('tmp', "#{@checkin.checkin_date.to_s}")
         original_pdf = File.open(pdf_file_name, 'rb').read
-        # raise pdf_file_name.inspect
+
         image = Magick::Image::from_blob(original_pdf) do
           self.format = 'PDF'
           self.quality = 100
