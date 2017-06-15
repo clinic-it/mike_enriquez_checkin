@@ -71,6 +71,10 @@ group :development do
   gem 'spring'
 end
 
+group :production do
+  gem 'wkhtmltopdf-heroku', '2.12.4.0'
+end
+
 gem 'rails_12factor', group: :production
 
 gem 'haml'
