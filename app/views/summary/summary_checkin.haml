@@ -30,7 +30,7 @@
                   %td= task.current_state.humanize
                   %td= task.title
                   %td.text-center= task.times_checked_in_current
-          %p= "Load: #{tasks_by_current.map(&:estimate).inject(0, &:+)}"
+          %p= "Load: #{tasks_by_current.map{|task| task.estimate ? task.estimate : 0}.inject(0, &:+)}"
 
         - blockers = @checkin.blockers.where(:user => user).first
         - unless blockers.nil?

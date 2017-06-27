@@ -36,7 +36,7 @@ class Checkin < ActiveRecord::Base
 
     task_load = []
     tasks_per_user.each_value do |tasks|
-      task_load.push tasks.sum(&:estimate) if tasks
+      task_load.push task_sum(tasks)
     end
 
     return task_load.sort.first.nil? ? 0 : task_load.sort.first
@@ -47,10 +47,18 @@ class Checkin < ActiveRecord::Base
 
     task_load = []
     tasks_per_user.each_value do |tasks|
-      task_load.push tasks.sum(&:estimate)
+      task_load.push task_sum(tasks)
     end
 
     return task_load.sort.reverse.first.nil? ? 0 : task_load.sort.reverse.first
+  end
+
+
+
+  private
+
+  def task_sum tasks
+    tasks.sum{|task| task.estimate ? task.estimate : 0}
   end
 
 end
