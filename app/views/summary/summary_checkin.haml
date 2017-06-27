@@ -21,7 +21,8 @@
               %th.column-estimate.text-center Estimate
               %th.column-status Status
               %th.column-title Title
-              %th.column-checkin-count.text-center Count
+              - if current
+                %th.column-checkin-count.text-center Count
               %tbody
               - tasks_by_project.each do |task|
                 %tr{:class => table_row_class(task.task_type)}
@@ -29,7 +30,8 @@
                   %td.text-center= estimate
                   %td= task.current_state.humanize
                   %td= task.title
-                  %td.text-center= task.times_checked_in_current
+                  - if current
+                    %td.text-center= task.times_checked_in_current
           %p= "Load: #{tasks_by_current.map{|task| task.estimate ? task.estimate : 0}.inject(0, &:+)}"
 
         - blockers = @checkin.blockers.where(:user => user).first
