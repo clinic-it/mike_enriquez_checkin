@@ -1,6 +1,6 @@
 class SummaryController < ApplicationController
 
-  require 'RMagick'
+  require 'rmagick'
 
   def show
     @today = Checkin.last
