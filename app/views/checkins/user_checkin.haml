@@ -15,6 +15,7 @@
       %b= current ? 'What I will do today' : 'What I did yesterday'
       %br
       - tasks_by_current.group_by(&:project).each_pair do |project, tasks_by_project|
+        %br
         %b= project.try(&:name)
         %table.table-sm
           %th.column-status Status
@@ -35,6 +36,7 @@
               %td= task.title
               %td.text-center= estimate
               %td.text-center= task.times_checked_in_current
+        %br
       %p= "Load: #{tasks_by_current.map(&:estimate).inject(0, &:+)}"
 
     - blockers = @checkin.blockers.where(:user => user).first
