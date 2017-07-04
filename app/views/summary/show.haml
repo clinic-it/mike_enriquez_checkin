@@ -42,7 +42,7 @@
           %p= "#{@today.submitted_checkins} SUBMITTED"
           %p= "#{@today.pending_checkins} LEFT"
         .col
-          = link_to 'VIEW', summary_checkin_path(:format => :jpg)
+          = link_to 'VIEW', summary_checkin_path
 
   .col-md-12
     = column_chart @chart_data, :ytitle => 'Load'

@@ -1,11 +1,11 @@
 .col-sm-12
   .col-sm-12.row
-    .col
+    .col.center-from-top
       %h5= "Checkin for #{@checkin.checkin_date.strftime('%B %d, %Y')}"
     .col
-      %i.fa.fa-square.feature Feature
-      %i.fa.fa-square.bug Bug
-      %i.fa.fa-square.chore Chore
+      .col.feature Feature
+      .col.bug Bug
+      .col.chore Chore
   - @checkin.tasks.group_by(&:user).each_pair do |user, tasks_by_user|
     .card
       .card-header.text-center
