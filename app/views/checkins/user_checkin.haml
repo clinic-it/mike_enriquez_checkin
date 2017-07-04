@@ -6,7 +6,7 @@
       %i.fa.fa-square.feature Feature
       %i.fa.fa-square.bug Bug
       %i.fa.fa-square.chore Chore
-  
+
   .card-header.text-center
     %h5= user.username
 
@@ -17,9 +17,9 @@
       - tasks_by_current.group_by(&:project).each_pair do |project, tasks_by_project|
         %b= project.try(&:name)
         %table.table-sm
-          %th.column-estimate.text-center Estimate
           %th.column-status Status
           %th.column-title Title
+          %th.column-estimate.text-center Estimate
           %th.column-checkin-count.text-center Count
           %tbody
           - tasks_by_project.each do |task|
@@ -31,9 +31,9 @@
               - klass = 'table-active'
             %tr{:class => klass}
               - estimate = (task.estimate == 0) ? 'Unestimated' : task.estimate
-              %td.text-center= estimate
               %td= task.current_state.humanize
               %td= task.title
+              %td.text-center= estimate
               %td.text-center= task.times_checked_in_current
       %p= "Load: #{tasks_by_current.map(&:estimate).inject(0, &:+)}"
 
