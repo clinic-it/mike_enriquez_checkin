@@ -288,7 +288,7 @@ class CheckinsController < ApplicationController
     image[0].format = 'JPG'
     image[0].to_blob
 
-    image[0].write(save_path)
+    image[0].trim!.write(save_path)
 
     s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
     obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}_#{DateTime.now.strftime('%N')}")
