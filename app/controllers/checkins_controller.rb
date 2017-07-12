@@ -2,6 +2,22 @@ class CheckinsController < ApplicationController
 
   require 'csv'
 
+  SINGLE_PROJECT_FILE_NAMES = {
+    'ernesto' => 'Ernesto',
+    'effie' => 'Effie',
+    'general_randd' => 'General R&D',
+    'lsd_jb' => 'LSD-JB',
+    'flightbot' => 'FlightBot',
+    'lsd_lg' => 'LSD-LG',
+    'lsd_bt' => 'LSD-BT',
+    'lsd_mat' => 'LSD-MAT',
+    'lsd_mbc' => 'LSD-MBC',
+    'amanda' => 'Amanda',
+    'effie' => 'Effie',
+    'docd' => 'DOCD',
+    'fox_optimal' => 'Fox Optimal Living Program Database'
+  }
+
   before_action :init, :only => [:index, :create, :destroy]
   after_action :generate_snapshot, :only => [:create]
 
@@ -88,6 +104,15 @@ class CheckinsController < ApplicationController
         end
 
         if task_owners.include? @user.fullname
+
+          if project.nil?
+            SINGLE_PROJECT_FILE_NAMES.keys.each do |key|
+              if file_to_process.include? key
+                project = Project.find_by_name SINGLE_PROJECT_FILE_NAMES[key]
+              end
+            end
+          end
+
           @all_tasks.push(
             new_task = Task.create(
               :checkin_id => @checkin.id,
