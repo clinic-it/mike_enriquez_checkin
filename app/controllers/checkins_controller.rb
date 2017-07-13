@@ -15,7 +15,8 @@ class CheckinsController < ApplicationController
     'amanda' => 'Amanda',
     'effie' => 'Effie',
     'docd' => 'DOCD',
-    'fox_optimal' => 'Fox Optimal Living Program Database'
+    'fox_optimal' => 'Fox Optimal Living Program Database',
+    'raven' => 'Raven'
   }
 
   before_action :init, :only => [:index, :create, :destroy]
