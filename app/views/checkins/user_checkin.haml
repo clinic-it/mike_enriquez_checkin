@@ -33,7 +33,14 @@
             %tr{:class => klass}
               - estimate = (task.estimate == 0) ? 'Unestimated' : task.estimate
               %td= task.current_state.humanize
-              %td= task.title
+              %td
+                = task.title
+                - unless task.task_blockers.empty?
+                  %br
+                  %br
+                  Blockers
+                  - task.task_blockers.each do |blocker|
+                    %li= blocker.blocker_text
               %td.text-center= estimate
               %td.text-center= task.times_checked_in_current
       %p= "Load: #{tasks_by_current.map{|task| task.estimate ? task.estimate : 0}.inject(0, &:+)}"

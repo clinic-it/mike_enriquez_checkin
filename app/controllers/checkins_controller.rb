@@ -129,6 +129,8 @@ class CheckinsController < ApplicationController
             )
           )
 
+          self.generate_task_blockers task, new_task
+
           display_estimate = (task['Estimate'] == nil) ? 'Unestimated' : task['Estimate']
           times_checkedin = new_task.current ? "[Times checked in: #{new_task.times_checked_in_current}]" : ''
 
@@ -235,6 +237,28 @@ class CheckinsController < ApplicationController
     note = Note.where(:message_timestamp => timestamp).try :destroy_all
     user_checkin =
       UserCheckin.where(:message_timestamp => timestamp).try :destroy_all
+  end
+
+  def generate_task_blockers task, new_task
+    blocker_texts = []
+    blocker_statuses = []
+    blockers = []
+
+    task.each do |row|
+      blocker_texts.push row[1] if row[0] == 'Blocker'
+    end
+
+    task.each do |row|
+      blocker_statuses.push row[1] if row[0] == 'Blocker Status'
+    end
+
+    (0..blocker_texts.count).each do |i|
+      blockers.push blocker_texts[i] unless blocker_texts[i] == nil
+    end
+
+    blockers.each do |blocker|
+      TaskBlocker.create :task => new_task, :blocker_text => blocker
+    end
   end
 
 
