@@ -4,6 +4,8 @@ class Task < ActiveRecord::Base
   belongs_to :project
   belongs_to :checkin
 
+  has_many :task_blockers
+
   scope :current, -> { where :current => true }
   scope :previous, -> { where :current => false }
   scope :current_tasks_1month_ago,
