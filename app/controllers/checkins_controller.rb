@@ -250,6 +250,8 @@ class CheckinsController < ApplicationController
     @checkin = Checkin.find_or_create_by :checkin_date => Date.today
     @client = Slack::Web::Client.new
     @channel = channel_hash[ENV['channel']]
+
+    check_for_existing_daily_user_checkin
   end
 
   def generate_snapshot
@@ -315,6 +317,25 @@ class CheckinsController < ApplicationController
     }
 
     self.update_message_timestamp @all_tasks
+  end
+
+  def check_for_existing_daily_user_checkin
+    checkin_tasks_to_override = Task.where :user => @user, :checkin => @checkin
+
+    if checkin_tasks_to_override.present?
+      timestamps = checkin_tasks_to_override.map &:message_timestamp
+
+      timestamps.uniq.each do |stamp|
+        @message_format = {
+          :channel => @channel,
+          :ts => stamp
+        }
+
+        @client.chat_delete(@message_format) rescue next
+      end
+
+      checkin_tasks_to_override.destroy_all
+    end
   end
 
 end
