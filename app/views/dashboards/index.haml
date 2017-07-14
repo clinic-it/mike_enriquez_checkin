@@ -7,14 +7,15 @@
             .card-title What I did yesterday
             - @projects.each do |project|
               - unless project.iterations(:scope => 'current_backlog').length == 0
-                %h3= project.name
-                - project.iterations(:scope => 'current_backlog').each do |iteration|
-                  - iteration.stories.each do |story|
-                    %label.checkbox
-                      = f.check_box :yesterday, {:multiple => true},
-                        {:project_id => story.project_id,:title => story.name, :url => story.url, :current_state => story.current_state, :estimate => story.estimate, :task_type => story.story_type, :task_id => story.id}
-                      = story.name
-                    %br
+                %h3{:data => {:toggle => 'collapse', :target => "#yesterday-#{project_name_to_id project}"}}= project.name
+                .collapse{:id => "yesterday-#{project_name_to_id project}"}
+                  - project.iterations(:scope => 'current_backlog').each do |iteration|
+                    - iteration.stories.each do |story|
+                      %label.checkbox
+                        = f.check_box :yesterday, {:multiple => true},
+                          {:project_id => story.project_id,:title => story.name, :url => story.url, :current_state => story.current_state, :estimate => story.estimate, :task_type => story.story_type, :task_id => story.id}
+                        = story.name
+                      %br
                 %hr
 
         .card
@@ -22,14 +23,15 @@
             .card-title What I will do today
             - @projects.each do |project|
               - unless project.iterations(:scope => 'current_backlog').length == 0
-                %h3= project.name
-                - project.iterations(:scope => 'current_backlog').each do |iteration|
-                  - iteration.stories.each do |story|
-                    %label.checkbox
-                      = f.check_box :today, {:multiple => true},
-                        {:project_id => story.project_id,:title => story.name, :url => story.url, :current_state => story.current_state, :estimate => story.estimate, :task_type => story.story_type, :task_id => story.id}
-                      = story.name
-                    %br
+                %h3{:data => {:toggle => 'collapse', :target => "#today-#{project_name_to_id project}"}}= project.name
+                .collapse{:id => "today-#{project_name_to_id project}"}
+                  - project.iterations(:scope => 'current_backlog').each do |iteration|
+                    - iteration.stories.each do |story|
+                      %label.checkbox
+                        = f.check_box :today, {:multiple => true},
+                          {:project_id => story.project_id,:title => story.name, :url => story.url, :current_state => story.current_state, :estimate => story.estimate, :task_type => story.story_type, :task_id => story.id}
+                        = story.name
+                      %br
                 %hr
 
       = f.submit

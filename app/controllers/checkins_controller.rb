@@ -249,7 +249,7 @@ class CheckinsController < ApplicationController
   end
 
   def generate_blockers blockers
-    return if blockers.empty?
+    return if blockers.blank?
 
     @blocker = Blocker.create(
       :checkin_id => @checkin.id,
@@ -277,7 +277,7 @@ class CheckinsController < ApplicationController
   end
 
   def generate_notes notes
-    return if notes.empty?
+    return if notes.blank?
 
     @note = Note.create(
       :checkin_id => @checkin.id,
@@ -359,7 +359,7 @@ class CheckinsController < ApplicationController
       'checkins' => 'C13M4L95W'
     }
 
-    @user = User.find_by_id params[:id]
+    @user = User.find_by_id 3
     @checkin = Checkin.find_or_create_by :checkin_date => Date.today
     @client = Slack::Web::Client.new
     @channel = channel_hash[ENV['channel']]
