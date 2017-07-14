@@ -1,0 +1,8 @@
+!!!
+%html
+  %head
+    %meta{:content => 'width=device-width, initial-scale=1', :name => 'viewport'}/
+    %title MikeEnriquez
+    = wicked_pdf_stylesheet_link_tag 'generated_pdf_report'
+  %body
+    = yield

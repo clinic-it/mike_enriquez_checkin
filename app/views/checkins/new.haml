@@ -24,7 +24,7 @@
             %td= text_area_tag :notes, nil, {placeholder: 'Optional', :rows => 5, :cols => 60, :class => 'form-control'}
           %tr
             %td
-            %td.text-right= submit_tag 'Publish Checkin', :class => 'btn btn-primary btn-sm'
+            %td.text-right= submit_tag 'Publish Checkin', :class => 'btn btn-primary btn-sm', :disable_with => 'Please wait...'
 
     .card-header
       %h3 Delete Checkin

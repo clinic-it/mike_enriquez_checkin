@@ -5,6 +5,22 @@ class CheckinsController < ApplicationController
   before_action :init, :only => [:index, :create, :destroy, :csv_checkin]
   after_action :generate_snapshot, :only => [:create, :csv_checkin]
 
+  SINGLE_PROJECT_FILE_NAMES = {
+    'ernesto' => 'Ernesto',
+    'effie' => 'Effie',
+    'general_randd' => 'General R&D',
+    'lsd_jb' => 'LSD-JB',
+    'flightbot' => 'FlightBot',
+    'lsd_lg' => 'LSD-LG',
+    'lsd_bt' => 'LSD-BT',
+    'lsd_mat' => 'LSD-MAT',
+    'lsd_mbc' => 'LSD-MBC',
+    'amanda' => 'Amanda',
+    'effie' => 'Effie',
+    'docd' => 'DOCD',
+    'fox_optimal' => 'Fox Optimal Living Program Database',
+    'raven' => 'Raven'
+  }
 
   def index
     @checkins = Checkin.all.order(:checkin_date => :desc).page params[:page]
@@ -19,21 +35,13 @@ class CheckinsController < ApplicationController
     yesterday_tasks = array_string_to_hash params[:checkin][:yesterday]
     current_tasks = array_string_to_hash params[:checkin][:today]
 
-    @message_format = {
-      :channel => @channel,
-      :as_user => true,
-      :text => "*#{@user.username} filed his daily checkin.*",
-      :attachments => [
-        generate_attachments(yesterday_tasks, false),
-        generate_attachments(current_tasks, true),
-        # generate_blockers(params[:blockers]),
-        # generate_notes(params[:notes])
-      ]
-    }
+    generate_attachments yesterday_tasks, false
+    generate_attachments current_tasks, true
+    generate_blockers params[:blockers]
+    generate_notes params[:notes]
 
-    self.update_message_timestamp @all_tasks
 
-    redirect_to :root
+    redirect_to summary_path
   end
 
 
@@ -185,6 +193,15 @@ class CheckinsController < ApplicationController
         end
 
         if task_owners.include? @user.fullname
+
+          if project.nil?
+            SINGLE_PROJECT_FILE_NAMES.keys.each do |key|
+              if file_to_process.include? key
+                project = Project.find_by_name SINGLE_PROJECT_FILE_NAMES[key]
+              end
+            end
+          end
+
           @all_tasks.push(
             new_task = Task.create(
               :checkin_id => @checkin.id,
@@ -199,6 +216,8 @@ class CheckinsController < ApplicationController
               :task_id => task['Id']
             )
           )
+
+          self.generate_task_blockers task, new_task
 
           display_estimate = (task['Estimate'] == nil) ? 'Unestimated' : task['Estimate']
           times_checkedin = new_task.current ? "[Times checked in: #{new_task.times_checked_in_current}]" : ''
@@ -291,6 +310,7 @@ class CheckinsController < ApplicationController
       task.update_attributes :message_timestamp => @timestamp
     end
 
+    @user_checkin.update_attributes :message_timestamp => @timestamp
     @blocker.update_attributes :message_timestamp => @timestamp if @blocker
     @note.update_attributes :message_timestamp => @timestamp if @note
   end
@@ -305,6 +325,28 @@ class CheckinsController < ApplicationController
     note = Note.where(:message_timestamp => timestamp).try :destroy_all
     user_checkin =
       UserCheckin.where(:message_timestamp => timestamp).try :destroy_all
+  end
+
+  def generate_task_blockers task, new_task
+    blocker_texts = []
+    blocker_statuses = []
+    blockers = []
+
+    task.each do |row|
+      blocker_texts.push row[1] if row[0] == 'Blocker'
+    end
+
+    task.each do |row|
+      blocker_statuses.push row[1] if row[0] == 'Blocker Status'
+    end
+
+    (0..blocker_texts.count).each do |i|
+      blockers.push blocker_texts[i] unless blocker_texts[i] == nil
+    end
+
+    blockers.each do |blocker|
+      TaskBlocker.create :task => new_task, :blocker_text => blocker
+    end
   end
 
 
@@ -324,25 +366,92 @@ class CheckinsController < ApplicationController
     @current_date = Date.today
     @yesterday_date = @current_date.monday? ? (@current_date - 3) : Date.yesterday
     @all_tasks = []
+
+    check_for_existing_daily_user_checkin
   end
 
   def generate_snapshot
-    kit = IMGKit.new render_to_string(:partial => 'checkins/user_checkin', :locals => {:@checkin => @checkin, :user => @user})
     filename = "#{@user.username}_#{@checkin.checkin_date}"
     save_path = Rails.root.join 'tmp', filename
 
+    action_controller_instance = ActionController::Base.new.tap { |controller|
+      def controller.params
+        {:format => 'pdf'}
+      end
+    }
+
+    pdf = WickedPdf.new.pdf_from_string(
+      action_controller_instance.render_to_string(
+        :action => 'create',
+        :template => 'checkins/user_checkin',
+        :layout => 'layouts/generated_pdf',
+        :locals => { :@checkin => @checkin, :user => @user }
+      ),
+      :viewport_size => '1280x1024',
+    )
+
+    save_path = Rails.root.join 'tmp/', filename
+
     File.open(save_path, 'wb') do |file|
-      file << kit.to_img(:jpg)
+      file << pdf
     end
 
+    original_pdf = File.open(save_path, 'rb').read
+
+    image = Magick::Image::from_blob(original_pdf) do
+      self.format = 'PDF'
+      self.quality = 100
+      self.density = 144
+    end
+    image[0].format = 'JPG'
+    image[0].to_blob
+
+    image[0].trim!.write(save_path)
+
     s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
-    obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}")
+    obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}_#{DateTime.now.strftime('%N')}")
     obj.upload_file(save_path)
 
-    user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
-    user_checkin.screenshot_path = obj.public_url
-    user_checkin.message_timestamp = @timestamp
-    user_checkin.save
+    @user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
+    @user_checkin.screenshot_path = obj.public_url
+    @user_checkin.message_timestamp = @timestamp
+    @user_checkin.save
+
+    send_slack_message
+  end
+
+  def send_slack_message
+    @message_format = {
+      :channel => @channel,
+      :as_user => true,
+      :text => "*#{@user.username} filed his daily checkin.*",
+      :attachments => [
+        :title => Date.today.strftime('%B %d, %Y'),
+        :image_url => @user_checkin.screenshot_path,
+        :color => '#36a64f'
+      ]
+    }
+
+    self.update_message_timestamp @all_tasks
+  end
+
+  def check_for_existing_daily_user_checkin
+    checkin_tasks_to_override = Task.where :user => @user, :checkin => @checkin
+
+    if checkin_tasks_to_override.present?
+      timestamps = checkin_tasks_to_override.map &:message_timestamp
+
+      timestamps.uniq.each do |stamp|
+        @message_format = {
+          :channel => @channel,
+          :ts => stamp
+        }
+
+        @client.chat_delete(@message_format) rescue next
+      end
+
+      checkin_tasks_to_override.destroy_all
+    end
   end
 
   def array_string_to_hash array

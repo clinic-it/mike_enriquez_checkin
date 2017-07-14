@@ -1,18 +1,18 @@
 %br
 .card
   .card-header
-    %h3= @user.username
-
+    %h3.text-center= @user.username
+    %ul.nav.nav-tabs.card-header-tabs
+      %li.nav-item
+        %a.card-tabs.nav-link.active{:href => '#active', :data => {:toggle => 'tab'}} Weekly Load
+      %li.nav-item
+        %a.card-tabs.nav-link{:href => '#inactive', :data => {:toggle => 'tab'}} Daily Load
   .card-block
-    .col-md-6.offset-md-3
-      %table.table
-        %thead.thead-default
-          %th.text-center Week
-          %th.text-center Previous
-          %th.text-center Current
-        %tbody
-          - @user.tasks_by_week.reverse_each do |week, tasks|
-            %tr.text-center
-              %td= "#{Task.week_dates(week)}"
-              %td= "#{tasks.reject{|task| task.current}.sum{|task| task.estimate ? task.estimate : 0}}"
-              %td= "#{tasks.reject{|task| !task.current}.sum{|task| task.estimate ? task.estimate : 0}}"
+    .tab-content
+      #active.tab-pane.fade.in.show.active
+        %h3 Weekly Load
+        = line_chart @current, :xtitle => 'Date', :ytitle => 'Load'
+
+      #inactive.tab-pane.fade.in{:role => 'tabpanel'}
+        %h3= "Daily Load (#{1.month.ago.strftime('%B %d, %Y')} - #{Date.today.strftime('%B %d, %Y')})"
+        = line_chart @current_daily, :xtitle => 'Date', :ytitle => 'Load', :discrete => true

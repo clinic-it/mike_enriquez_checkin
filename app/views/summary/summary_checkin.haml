@@ -1,0 +1,45 @@
+.col-sm-12
+  .col-sm-12.row
+    .col.center-from-top
+      %h5= "Checkin for #{@checkin.checkin_date.strftime('%B %d, %Y')}"
+    .col
+      .col.feature Feature
+      .col.bug Bug
+      .col.chore Chore
+  - @checkin.tasks.group_by(&:user).each_pair do |user, tasks_by_user|
+    .card
+      .card-header.text-center
+        %h5= user.username
+
+      .card-block
+        - tasks_by_user.group_by(&:current).each_pair do |current, tasks_by_current|
+          %b= current ? 'What I will do today' : 'What I did yesterday'
+          %br
+          - tasks_by_current.group_by(&:project).each_pair do |project, tasks_by_project|
+            %b= project.try(&:name)
+            %table.table-sm
+              %th.column-estimate.text-center Estimate
+              %th.column-status Status
+              %th.column-title Title
+              - if current
+                %th.column-checkin-count.text-center Count
+              %tbody
+              - tasks_by_project.each do |task|
+                %tr{:class => table_row_class(task.task_type)}
+                  - estimate = (task.estimate == 0) ? 'Unestimated' : task.estimate
+                  %td.text-center= estimate
+                  %td= task.current_state.humanize
+                  %td= task.title
+                  - if current
+                    %td.text-center= task.times_checked_in_current
+          %p= "Load: #{tasks_by_current.map{|task| task.estimate ? task.estimate : 0}.inject(0, &:+)}"
+
+        - blockers = @checkin.blockers.where(:user => user).first
+        - unless blockers.nil?
+          %b Blockers
+          %p= blockers.description
+
+        - notes = @checkin.notes.where(:user => user).first
+        - unless notes.nil?
+          %b Notes
+          %p= notes.description

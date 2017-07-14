@@ -1,0 +1,35 @@
+@import 'bootstrap';
+// @import 'font-awesome';
+
+body {
+  font-size: 80%;
+}
+
+.feature{
+  color: green;
+}
+
+.bug {
+  color: red;
+}
+
+.chore {
+  color: grey;
+}
+
+.table-sm {
+  width: 100%;
+}
+
+
+.column-estimate,
+.column-status,
+.column-checkin-count {
+  width: 5%;
+}
+
+.center-from-top {
+  position: relative;
+  top: 50%;
+  transform: translateY(25%); /* or try 50% */
+}

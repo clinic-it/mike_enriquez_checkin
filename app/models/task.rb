@@ -4,7 +4,12 @@ class Task < ActiveRecord::Base
   belongs_to :project
   belongs_to :checkin
 
+  has_many :task_blockers
+
   scope :current, -> { where :current => true }
+  scope :previous, -> { where :current => false }
+  scope :current_tasks_1month_ago,
+    -> { current.where('tasks.created_at BETWEEN ? AND ?', 1.month.ago.beginning_of_day, Date.today.end_of_day) }
 
   def week
     self.created_at.strftime '%W'
@@ -19,7 +24,9 @@ class Task < ActiveRecord::Base
   end
 
   def times_checked_in_current
-    Task.where(:task_id => self.task_id, :current => true).count
+    count = Task.where(:task_id => self.task_id, :current => true).count
+
+    count == 0 ? 1 : count
   end
 
 end
