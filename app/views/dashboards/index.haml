@@ -2,36 +2,31 @@
   .col-md-12
     = form_for @checkin, :class => 'form-inline', :method => :post do |f|
       .card-deck
-        .card
-          .card-block
-            .card-title What I did yesterday
-            - @projects.each do |project|
-              - unless project.iterations(:scope => 'current_backlog').length == 0
-                %h3{:data => {:toggle => 'collapse', :target => "#yesterday-#{project_name_to_id project}"}}= project.name
-                .collapse{:id => "yesterday-#{project_name_to_id project}"}
-                  - project.iterations(:scope => 'current_backlog').each do |iteration|
-                    - iteration.stories.each do |story|
+        - Checkin::CHECKIN_DAYS.each do |day|
+          .card
+            .card-block
+              .card-title= "What I did #{day}"
+              - @project_hash.keys.each do |project_name|
+                - unless @project_hash[project_name].count == 0
+                  - project_to_id = project_name_to_id project_name
+                  .project-header.row.align-items-end
+                    .col
+                      %h3.project-section{:data => {:toggle => 'collapse', :target => "##{day}-#{project_to_id}"}}= project_name
+                    .col-md-2.pull-right
+                      %span.align-bottom{:id => "#{day}-#{project_to_id}-count"} 0 selected
+                  .collapse{:id => "#{day}-#{project_to_id}"}
+                    - @project_hash[project_name].each do |story|
                       %label.checkbox
-                        = f.check_box :yesterday, {:multiple => true},
-                          {:project_id => story.project_id,:title => story.name, :url => story.url, :current_state => story.current_state, :estimate => story.estimate, :task_type => story.story_type, :task_id => story.id}
-                        = story.name
+                        = f.check_box day, {:multiple => true, :class => "#{day}-#{project_to_id}-check-box"}, story
+                        = story[:title]
                       %br
-                %hr
+                  %hr
+      .row
+        .col
+          = f.label :blockers
+          = f.text_area :blockers, {placeholder: 'Optional', :rows => 5, :cols => 60, :class => 'form-control'}
+        .col
+          = f.label :notes
+          = f.text_area :notes, {placeholder: 'Optional', :rows => 5, :cols => 60, :class => 'form-control'}
 
-        .card
-          .card-block
-            .card-title What I will do today
-            - @projects.each do |project|
-              - unless project.iterations(:scope => 'current_backlog').length == 0
-                %h3{:data => {:toggle => 'collapse', :target => "#today-#{project_name_to_id project}"}}= project.name
-                .collapse{:id => "today-#{project_name_to_id project}"}
-                  - project.iterations(:scope => 'current_backlog').each do |iteration|
-                    - iteration.stories.each do |story|
-                      %label.checkbox
-                        = f.check_box :today, {:multiple => true},
-                          {:project_id => story.project_id,:title => story.name, :url => story.url, :current_state => story.current_state, :estimate => story.estimate, :task_type => story.story_type, :task_id => story.id}
-                        = story.name
-                      %br
-                %hr
-
-      = f.submit
+      = f.submit 'Publish Checkin', :class => 'btn btn-primary'

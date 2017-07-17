@@ -1,6 +1,6 @@
 class CheckinForm < Reform::Form
 
-  # properties :yesterday, :today, :virtual => true
+  properties :blockers, :notes, :virtual => true
 
   collection :yesterday, :virtual => true
   collection :today, :virtual => true
