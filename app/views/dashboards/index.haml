@@ -1,0 +1,32 @@
+.container-fluid
+  .col-md-12
+    = form_for @checkin, :class => 'form-inline', :method => :post do |f|
+      .card-deck
+        - Checkin::CHECKIN_DAYS.each do |day|
+          .card
+            .card-block
+              .card-title= "What I did #{day}"
+              - @project_hash.keys.each do |project_name|
+                - unless @project_hash[project_name].count == 0
+                  - project_to_id = project_name_to_id project_name
+                  .project-header.row.align-items-end
+                    .col
+                      %h3.project-section{:data => {:toggle => 'collapse', :target => "##{day}-#{project_to_id}"}}= project_name
+                    .col-md-2.pull-right
+                      %span.align-bottom{:id => "#{day}-#{project_to_id}-count"} 0 selected
+                  .collapse{:id => "#{day}-#{project_to_id}"}
+                    - @project_hash[project_name].each do |story|
+                      %label.checkbox
+                        = f.check_box day, {:multiple => true, :class => "#{day}-#{project_to_id}-check-box"}, story
+                        = story[:title]
+                      %br
+                  %hr
+      .row
+        .col
+          = f.label :blockers
+          = f.text_area :blockers, {placeholder: 'Optional', :rows => 5, :cols => 60, :class => 'form-control'}
+        .col
+          = f.label :notes
+          = f.text_area :notes, {placeholder: 'Optional', :rows => 5, :cols => 60, :class => 'form-control'}
+
+      = f.submit 'Publish Checkin', :class => 'btn btn-primary'

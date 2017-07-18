@@ -1,35 +1,36 @@
-.col-md-12
-  .card
-    .card-header
-      %h3 Upload Checkin
-    .card-block
+- if current_user
+  .col-md-12
+    .card
+      .card-header
+        %h3 Upload Checkin
+      .card-block
 
 
-      = form_tag :checkins, :multipart => true, :method => :post do
-        %table
-          %tr
-            %td= label_tag :name
-            %td= select_tag :id, options_from_collection_for_select(User.all, 'id', 'username'), {:required => true, :include_blank => '', :class => 'custom-select'}
-          %tr
-            %td= label_tag "What I've worked on"
-            %td= file_field_tag :yesterday_tasks, {:required => true}
-          %tr
-            %td= label_tag "What I'm going to do"
-            %td= file_field_tag :current_tasks, {:required => true}
-          %tr
-            %td= label_tag :blockers
-            %td= text_area_tag :blockers, nil, {placeholder: 'Optional', :rows => 5, :cols => 60, :class => 'form-control'}
-          %tr
-            %td= label_tag :notes
-            %td= text_area_tag :notes, nil, {placeholder: 'Optional', :rows => 5, :cols => 60, :class => 'form-control'}
-          %tr
-            %td
-            %td.text-right= submit_tag 'Publish Checkin', :class => 'btn btn-primary btn-sm', :disable_with => 'Please wait...'
+        = form_tag csv_checkin_path, :multipart => true, :method => :post do
+          %table
+            %tr
+              %td= label_tag :name
+              %td= select_tag :id, options_from_collection_for_select(User.all, 'id', 'username'), {:required => true, :include_blank => '', :class => 'custom-select'}
+            %tr
+              %td= label_tag "What I've worked on"
+              %td= file_field_tag :yesterday_tasks, {:required => true}
+            %tr
+              %td= label_tag "What I'm going to do"
+              %td= file_field_tag :current_tasks, {:required => true}
+            %tr
+              %td= label_tag :blockers
+              %td= text_area_tag :blockers, nil, {placeholder: 'Optional', :rows => 5, :cols => 60, :class => 'form-control'}
+            %tr
+              %td= label_tag :notes
+              %td= text_area_tag :notes, nil, {placeholder: 'Optional', :rows => 5, :cols => 60, :class => 'form-control'}
+            %tr
+              %td
+              %td.text-right= submit_tag 'Publish Checkin', :class => 'btn btn-primary btn-sm', :disable_with => 'Please wait...'
 
-    .card-header
-      %h3 Delete Checkin
-    .card-block
-      = form_tag :checkins, :method => :delete do
-        .form-group.row
-          = text_field_tag :timestamp, nil, {:placeholder => 'Timestamp from Slack', :class => 'form-control col-sm-2'}
-          = submit_tag 'Delete Checkin', :class => 'btn btn-danger btn-sm col-sm-3'
+      .card-header
+        %h3 Delete Checkin
+      .card-block
+        = form_tag :checkins, :method => :delete do
+          .form-group.row
+            = text_field_tag :timestamp, nil, {:placeholder => 'Timestamp from Slack', :class => 'form-control col-sm-2'}
+            = submit_tag 'Delete Checkin', :class => 'btn btn-danger btn-sm col-sm-3'

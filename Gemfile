@@ -43,14 +43,19 @@ gem 'grim', '1.3.2'
 gem 'paperclip', '5.1.0'
 gem 'aws-sdk', '2.9.29'
 
+
+# Used as a decorator
+gem 'draper', '2.1.0'
+
 # Used to create charts
 gem 'chartkick', '2.2.4'
 
 # Used for icons
 gem 'font-awesome-rails', '4.5.0.1'
 
+
 # Use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
+gem 'bcrypt', '~> 3.1.7'
 
 # Use Unicorn as the app server
 # gem 'unicorn'
@@ -80,5 +85,7 @@ gem 'rails_12factor', group: :production
 gem 'haml'
 gem 'slack-ruby-client'
 gem 'figaro'
+gem 'tracker_api'
+gem 'reform-rails'
 
 ruby '2.2.1'

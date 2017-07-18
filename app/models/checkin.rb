@@ -2,6 +2,11 @@ class Checkin < ActiveRecord::Base
 
   paginates_per 10
 
+  CHECKIN_DAYS = [
+    'yesterday',
+    'today'
+  ]
+
   has_many :tasks, :dependent => :destroy
   has_many :notes, :dependent => :destroy
   has_many :blockers, :dependent => :destroy
