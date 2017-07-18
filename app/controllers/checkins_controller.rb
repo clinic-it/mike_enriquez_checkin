@@ -445,7 +445,7 @@ class CheckinsController < ApplicationController
       'checkins' => 'C13M4L95W'
     }
 
-    @user = User.find_by_id 3
+    @user = User.find_by_id current_user
     @checkin = Checkin.find_or_create_by :checkin_date => Date.today
     @client = Slack::Web::Client.new
     @channel = channel_hash[ENV['channel']]
