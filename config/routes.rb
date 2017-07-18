@@ -3,7 +3,6 @@ Rails.application.routes.draw do
   root 'checkins#new'
 
   resources :checkins
-  resources :dashboards
   resources :users, :only => [:show]
 
   get 'summary' => 'summary#show'
@@ -13,5 +12,6 @@ Rails.application.routes.draw do
 
   post 'login' => 'sessions#create'
   get 'logout' => 'sessions#destroy'
+  get 'dashboard' => 'dashboards#index'
 
 end
