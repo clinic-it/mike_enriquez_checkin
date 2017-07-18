@@ -63,25 +63,20 @@ class CheckinsController < ApplicationController
   def csv_checkin
     @yesterday_tasks = params[:yesterday_tasks]
     @current_tasks = params[:current_tasks]
+    @current_date = Date.today
+    @yesterday_date = @current_date.monday? ? (@current_date - 3) : Date.yesterday
+    @all_tasks = []
 
     yesterday_tasks = CSV.read(@yesterday_tasks.path, :headers => true).group_by{|task| task['Project Id']}
     current_tasks = CSV.read(@current_tasks.path, :headers => true).group_by{|task| task['Project Id']}
 
-    @message_format = {
-      :channel => @channel,
-      :as_user => true,
-      :text => "*#{@user.username} filed his daily checkin.*",
-      :attachments => [
-        generate_attachments_from_csv(yesterday_tasks, false),
-        generate_attachments_from_csv(current_tasks, true),
-        generate_blockers(params[:blockers]),
-        generate_notes(params[:notes])
-      ]
-    }
+    csv_generate_attachments yesterday_tasks, false
+    csv_generate_attachments current_tasks, true
+    generate_blockers params[:blockers]
+    generate_notes params[:notes]
 
-    self.update_message_timestamp @all_tasks
 
-    redirect_to :root
+    redirect_to summary_path
   end
 
 
@@ -90,6 +85,95 @@ class CheckinsController < ApplicationController
 
   def parse_timestamp ts
     ts.tr('p', '').insert 10 ,'.'
+  end
+
+  def csv_generate_attachments arr, current_tasks
+    estimate = 0
+    fields = []
+
+    pretext =
+      if current_tasks
+        @current_date.strftime "Current Tasks (%A - %m/%d/%Y)"
+      else
+        @yesterday_date.strftime "Yesterday's Tasks (%A - %m/%d/%Y)"
+      end
+
+    arr.each do |entry|
+      project = Project.find_by_pivotal_id entry[0].to_i
+
+      fields.push(
+        :value =>
+          if project.nil?
+            file_to_process = current_tasks ? @yesterday_tasks.original_filename : @current_tasks.original_filename
+            "*Work on #{file_to_process.split('_')[0]}*"
+          else
+            "*Work on #{project.name}*"
+          end
+      )
+
+      project_tasks = entry[1]
+
+      project_tasks.each do |task|
+        task_owners = []
+
+        task.each do |field|
+          task_owners.push field.last if field.first == 'Owned By'
+        end
+
+        if task_owners.include? @user.fullname
+
+          if project.nil?
+            SINGLE_PROJECT_FILE_NAMES.keys.each do |key|
+              if file_to_process.include? key
+                project = Project.find_by_name SINGLE_PROJECT_FILE_NAMES[key]
+              end
+            end
+          end
+
+          @all_tasks.push(
+            new_task = Task.create(
+              :checkin_id => @checkin.id,
+              :project_id => project.nil? ? 100000 : project.id,
+              :user_id => @user.id,
+              :title => task['Title'],
+              :url => task['URL'],
+              :current_state => task['Current State'],
+              :estimate => task['Estimate'],
+              :task_type => task['Type'],
+              :current => current_tasks,
+              :task_id => task['Id']
+            )
+          )
+
+          self.generate_task_blockers task, new_task
+
+          display_estimate = (task['Estimate'] == nil) ? 'Unestimated' : task['Estimate']
+          times_checkedin = new_task.current ? "[Times checked in: #{new_task.times_checked_in_current}]" : ''
+
+          fields.push(
+            :value => "<#{task['URL']}|•[#{task['Type']}][#{task['Current State']}][#{display_estimate}]#{times_checkedin} #{task['Title']}>"
+          )
+
+          estimate += task['Estimate'].to_i
+        end
+      end
+
+    end
+
+    fields.push(
+      {
+        :title => "Load: #{estimate}"
+      }
+    )
+
+    return(
+      {
+        :pretext => pretext,
+        :fields => fields,
+        :color => '#36a64f',
+        :mrkdwn_in => ['fields']
+      }
+    )
   end
 
   def generate_attachments arr, current_tasks

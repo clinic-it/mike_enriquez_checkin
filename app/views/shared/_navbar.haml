@@ -24,4 +24,4 @@
         = form_for :session, :url => login_path, :method => :post, :html => {:class => 'form-inline'} do |f|
           = f.text_field :username, :class => 'form-control'
           = f.password_field :password, :class => 'form-control'
-          = f.submit 'Sign in', :class => 'btn btn-primary', :disable_with => '...'
+          = f.submit 'Sign in', :class => 'btn btn-primary', :data => { :disable_with => 'Please wait' }

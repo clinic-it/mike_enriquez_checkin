@@ -2,7 +2,8 @@ class DashboardsController < ApplicationController
 
   def index
     @checkin = CheckinForm.new Checkin.new
-    pivotal = TrackerApi::Client.new(token: '0dbcbec6e4625e965dbdf5444dcb929d')
+    user = User.find_by_id current_user
+    pivotal = TrackerApi::Client.new :token =>  user.pivotal_token
 
     @project_hash = {}
 
