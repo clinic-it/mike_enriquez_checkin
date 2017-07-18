@@ -29,4 +29,4 @@
           = f.label :notes
           = f.text_area :notes, {placeholder: 'Optional', :rows => 5, :cols => 60, :class => 'form-control'}
 
-      = f.submit 'Publish Checkin', :class => 'btn btn-primary'
+      = f.submit 'Publish Checkin', :class => 'btn btn-primary', :data => {:disable_with => 'Please wait...'}
