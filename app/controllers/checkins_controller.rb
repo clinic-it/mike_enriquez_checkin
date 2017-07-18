@@ -2,6 +2,8 @@ class CheckinsController < ApplicationController
 
   require 'csv'
 
+  skip_before_action :authorize, :only => [:new]
+
   before_action :init, :only => [:index, :create, :destroy, :csv_checkin]
   after_action :generate_snapshot, :only => [:create, :csv_checkin]
 

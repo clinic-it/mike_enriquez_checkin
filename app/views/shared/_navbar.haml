@@ -1,14 +1,27 @@
 .header
   %nav.navbar.bg-faded.navbar-toggleable-md
     .navbar-brand= link_to 'Mike Enriquez Checkin', :root
-    %ul.nav.navbar-nav
-      %li.nav-item
-        .nav-link= link_to 'Daily Summary', summary_path
-      %li.nav-item
-        .nav-link= link_to 'Index', checkins_path
-      %li.nav-item.dropdown
-        %a#navbarDropdownMenuLink.nav-link.dropdown-toggle{"data-toggle" => "dropdown", :href => '#'}
-          Devs Weekly Load
-        .dropdown-menu
-          - User.all.each do |user|
-            = link_to user.username, user, :class => 'dropdown-item'
+    - if current_user
+      %ul.nav.navbar-nav
+        %li.nav-item
+          .nav-link= link_to 'Daily Summary', summary_path
+        %li.nav-item
+          .nav-link= link_to 'Index', checkins_path
+        %li.nav-item.dropdown
+          %a#navbarDropdownMenuLink.nav-link.dropdown-toggle{"data-toggle" => "dropdown", :href => '#'}
+            Devs Weekly Load
+          .dropdown-menu
+            - User.all.each do |user|
+              = link_to user.username, user, :class => 'dropdown-item'
+
+    %ul.nav.navbar-nav.ml-auto
+      - if current_user
+        %li.nav-item
+          .nav-link= User.find_by_id(current_user).username
+        %li.nav-item
+          .nav-link= link_to 'Sign Out', logout_path
+      - else
+        = form_for :session, :url => login_path, :method => :post, :html => {:class => 'form-inline'} do |f|
+          = f.text_field :username, :class => 'form-control'
+          = f.password_field :password, :class => 'form-control'
+          = f.submit 'Sign in', :class => 'btn btn-primary', :disable_with => '...'
