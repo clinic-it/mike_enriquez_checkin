@@ -10,6 +10,10 @@ class DashboardsController < ApplicationController
     pivotal.projects.each do |project|
       @project_hash[project.name] = []
 
+      project.iterations(:scope => 'done', :offset => -1).each do |iteration|
+        @project_hash[project.name].push iteration.stories.map{|story| {:project_id => story.project_id, :title => story.name, :url => story.url, :current_state => story.current_state, :estimate => story.estimate, :task_type => story.story_type, :task_id => story.id}}
+      end
+
       project.iterations(:scope => 'current_backlog').each do |iteration|
         @project_hash[project.name].push iteration.stories.map{|story| {:project_id => story.project_id, :title => story.name, :url => story.url, :current_state => story.current_state, :estimate => story.estimate, :task_type => story.story_type, :task_id => story.id}}
       end
