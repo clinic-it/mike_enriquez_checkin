@@ -1,5 +1,7 @@
 $(document).on('page:load turbolinks:load', function() {
 
+  $('.js-project-tablesorter').tablesorter();
+
   $(':checkbox').on('click', function(){
     var className = '.' + $(this).attr('class'),
         parentClass = '.' + $(this).attr('class').split('-');

@@ -28,6 +28,7 @@ source 'https://rails-assets.org' do
 end
 
 gem 'kaminari'
+gem 'jquery-tablesorter'
 
 # Used to generate image
 gem 'imgkit', '1.6.1'
