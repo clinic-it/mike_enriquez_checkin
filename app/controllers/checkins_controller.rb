@@ -33,7 +33,7 @@ class CheckinsController < ApplicationController
   end
 
   def create
-    @user = User.find_by_id 3
+    @user = User.find_by_id current_user
     yesterday_tasks = array_string_to_hash params[:checkin][:yesterday]
     current_tasks = array_string_to_hash params[:checkin][:today]
 
