@@ -20,12 +20,19 @@
                           %h3.project-section= project_name
                         .col-md-2.pull-right
                           %span.align-bottom{:id => "#{day}-#{project_to_id}-count"} 0 selected
-                      %div
-                        - @project_hash[project_name].each do |story|
-                          %label.checkbox
-                            = f.check_box day, {:multiple => true, :class => "#{day}-#{project_to_id}-check-box"}, story
-                            = story[:title]
-                          %br
+                      %table
+                        %thead
+                          %th
+                          %th.text-center Estimate
+                          %th.text-center State
+                          %th Title
+                        %tbody
+                          - @project_hash[project_name].each do |story|
+                            %tr
+                              %td= f.check_box day, {:multiple => true, :class => "#{day}-#{project_to_id}-check-box"}, story
+                              %td.text-center= story[:estimate]
+                              %td.text-center= story[:current_state].humanize
+                              %td= story[:title]
       .row
         .col
           = f.label :blockers
