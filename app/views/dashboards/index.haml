@@ -1,26 +1,31 @@
 .container-fluid
   .col-md-12
     = form_for @checkin, :class => 'form-inline', :method => :post do |f|
-      .card-deck
-        - Checkin::CHECKIN_DAYS.each do |day|
-          .card
+      - Checkin::CHECKIN_DAYS.each do |day|
+        .card
+          %div{:class => "#{day}"}
             .card-block
-              .card-title= "What I did #{day}"
-              - @project_hash.keys.each do |project_name|
-                - unless @project_hash[project_name].count == 0
-                  - project_to_id = project_name_to_id project_name
-                  .project-header.row.align-items-end
-                    .col
-                      %h3.project-section{:data => {:toggle => 'collapse', :target => "##{day}-#{project_to_id}"}}= project_name
-                    .col-md-2.pull-right
-                      %span.align-bottom{:id => "#{day}-#{project_to_id}-count"} 0 selected
-                  .collapse{:id => "#{day}-#{project_to_id}"}
-                    - @project_hash[project_name].each do |story|
-                      %label.checkbox
-                        = f.check_box day, {:multiple => true, :class => "#{day}-#{project_to_id}-check-box"}, story
-                        = story[:title]
-                      %br
-                  %hr
+              .card-title
+                %h4= "What I did #{day}"
+                %span.ml-auto.align-bottom{:id => "#{day}"} 0 selected
+              .project-selection
+                = select_tag :project, options_for_select(@project_hash.keys.sort.reject{|project_name| @project_hash[project_name].count == 0}.map{|project| [project, "##{day}-#{project_name_to_id project}"]}), :prompt => 'Select Project', :class => 'project-select custom-select'
+              .project-list
+                - @project_hash.keys.each do |project_name|
+                  - unless @project_hash[project_name].count == 0
+                    - project_to_id = project_name_to_id project_name
+                    .project{:id => "#{day}-#{project_to_id}"}
+                      .project-header.row.align-items-end
+                        .col
+                          %h3.project-section= project_name
+                        .col-md-2.pull-right
+                          %span.align-bottom{:id => "#{day}-#{project_to_id}-count"} 0 selected
+                      %div
+                        - @project_hash[project_name].each do |story|
+                          %label.checkbox
+                            = f.check_box day, {:multiple => true, :class => "#{day}-#{project_to_id}-check-box"}, story
+                            = story[:title]
+                          %br
       .row
         .col
           = f.label :blockers
