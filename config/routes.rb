@@ -14,4 +14,9 @@ Rails.application.routes.draw do
   get 'logout' => 'sessions#destroy'
   get 'dashboard' => 'dashboards#index'
 
+  scope '/api' do
+    scope :module => :v1, :defaults => {:format => 'json'} do
+      resources :projects, :only => [:index]
+    end
+  end
 end
