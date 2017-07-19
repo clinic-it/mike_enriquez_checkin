@@ -39,8 +39,8 @@ class CheckinsController < ApplicationController
 
     generate_attachments yesterday_tasks, false
     generate_attachments current_tasks, true
-    generate_blockers params[:blockers]
-    generate_notes params[:notes]
+    generate_blockers params[:checkin][:blockers]
+    generate_notes params[:checkin][:notes]
 
 
     redirect_to summary_path
@@ -523,6 +523,10 @@ class CheckinsController < ApplicationController
 
   def check_for_existing_daily_user_checkin
     checkin_tasks_to_override = Task.where :user => @user, :checkin => @checkin
+    checkin_blockers_to_override =
+      Blocker.where :user => @user, :checkin => @checkin
+    checkin_notes_to_override =
+      Note.where :user => @user, :checkin => @checkin
 
     if checkin_tasks_to_override.present?
       timestamps = checkin_tasks_to_override.map &:message_timestamp
@@ -538,6 +542,9 @@ class CheckinsController < ApplicationController
 
       checkin_tasks_to_override.destroy_all
     end
+
+    checkin_blockers_to_override.destroy_all if checkin_blockers_to_override.present?
+    checkin_notes_to_override.destroy_all if checkin_notes_to_override.present?
   end
 
   def array_string_to_hash array
