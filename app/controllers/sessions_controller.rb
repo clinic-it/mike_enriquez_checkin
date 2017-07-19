@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
    if user && user.authenticate(params[:session][:password])
      session[:user_id] = user.id
 
-     return redirect_to summary_path if user.pivotal_token.nil?
+     return redirect_to summary_path if user.pivotal_token.nil? || user.admin?
 
      redirect_to dashboard_path
    else

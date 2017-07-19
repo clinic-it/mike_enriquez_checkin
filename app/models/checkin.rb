@@ -21,7 +21,7 @@ class Checkin < ActiveRecord::Base
   end
 
   def pending_checkins
-    User.all.count - self.submitted_checkins
+    User.where.not(:admin => true).count - self.submitted_checkins
   end
 
   def users_with_checkin
