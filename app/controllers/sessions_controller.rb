@@ -9,11 +9,11 @@ class SessionsController < ApplicationController
      session[:user_id] = user.id
 
      return redirect_to summary_path if user.pivotal_token.nil?
-     
+
      redirect_to dashboard_path
    else
      flash[:error] = 'Username/Password is incorrect'
-     redirect_to :root
+     redirect_to dashboard_path
    end
  end
 
