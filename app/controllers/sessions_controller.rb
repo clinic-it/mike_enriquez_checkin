@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
      redirect_to dashboard_path
    else
      flash[:error] = 'Username/Password is incorrect'
-     redirect_to dashboard_path
+     redirect_to :root
    end
  end
 
