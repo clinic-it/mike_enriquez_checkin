@@ -19,4 +19,8 @@ class User < ActiveRecord::Base
     Checkin.offset(1).last.tasks.current.where(:user => self).sum(:estimate)
   end
 
+  def is_admin?
+    self.admin
+  end
+
 end
