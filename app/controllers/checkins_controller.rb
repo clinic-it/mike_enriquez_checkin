@@ -179,19 +179,7 @@ class CheckinsController < ApplicationController
 
     original_pdf = File.open(save_path, 'rb').read
 
-    image = Magick::Image::from_blob(original_pdf) do
-      self.format = 'PDF'
-      self.quality = 100
-      self.density = 144
-    end
-    image[0].format = 'JPG'
-    image[0].to_blob
-
-    image[0].trim!.write(save_path)
-
-    s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
-    obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}_#{DateTime.now.strftime('%N')}")
-    obj.upload_file(save_path)
+    obj = generate_image original_pdf, save_path, filename
 
     @user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
     @user_checkin.screenshot_path = obj.public_url
@@ -199,6 +187,23 @@ class CheckinsController < ApplicationController
     @user_checkin.save
 
     send_slack_message
+  end
+
+  def generate_image pdf, save_path, filename
+    image = Magick::Image::from_blob(pdf) do
+      self.format = 'PDF'
+      self.quality = 100
+      self.density = 144
+    end
+    image[0].format = 'JPG'
+    image[0].to_blob
+    image[0].trim!.write save_path
+
+    s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
+    obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}_#{DateTime.now.strftime('%N')}")
+    obj.upload_file save_path
+
+    obj
   end
 
   def send_slack_message
