@@ -1,11 +1,9 @@
 class CheckinsController < ApplicationController
 
-  require 'csv'
-
   skip_before_action :authorize, :only => [:new]
 
-  before_action :init, :only => [:index, :create, :destroy, :csv_checkin]
-  after_action :generate_snapshot, :only => [:create, :csv_checkin]
+  before_action :init, :only => [:index, :create, :destroy]
+  after_action :generate_snapshot, :only => [:create]
 
 
   def index
@@ -21,10 +19,10 @@ class CheckinsController < ApplicationController
     yesterday_tasks = array_string_to_hash params[:checkin][:yesterday]
     current_tasks = array_string_to_hash params[:checkin][:today]
 
-    generate_attachments yesterday_tasks, false
-    generate_attachments current_tasks, true
-    generate_blockers params[:checkin][:blockers]
-    generate_notes params[:checkin][:notes]
+    generate_tasks yesterday_tasks, false
+    generate_tasks current_tasks, true
+    generate_attachments params[:checkin][:blockers], 'blocker'
+    generate_attachments params[:checkin][:notes], 'note'
 
 
     redirect_to summary_path
@@ -52,28 +50,9 @@ class CheckinsController < ApplicationController
     ts.tr('p', '').insert 10 ,'.'
   end
 
-  def generate_attachments arr, current_tasks
-    estimate = 0
-    fields = []
-
-    pretext =
-      if current_tasks
-        @current_date.strftime "Current Tasks (%A - %m/%d/%Y)"
-      else
-        @yesterday_date.strftime "Yesterday's Tasks (%A - %m/%d/%Y)"
-      end
-
+  def generate_tasks arr, current_tasks
     arr.each do |entry|
       project = Project.find_by_pivotal_id entry[0].to_i
-
-      fields.push(
-        :value =>
-          if project.nil?
-            'Work on tasks'
-          else
-            "*Work on #{project.name}*"
-          end
-      )
 
       project_tasks = entry[1]
 
@@ -92,53 +71,19 @@ class CheckinsController < ApplicationController
             :task_id => task[:task_id]
           )
         )
-
-        display_estimate = (task[:estimate] == nil) ? 'Unestimated' : task[:estimate]
-        times_checkedin = new_task.current ? "[Times checked in: #{new_task.times_checked_in_current}]" : ''
-
-        fields.push(
-          :value => "<#{task[:url]}|•[#{task[:task_type]}][#{task[:current_state]}][#{display_estimate}]#{times_checkedin} #{task[:title]}>"
-        )
-
-        estimate += task[:estimate].to_i
       end
 
     end
-
-    fields.push(
-      {
-        :title => "Load: #{estimate}"
-      }
-    )
-
-    return(
-      {
-        :pretext => pretext,
-        :fields => fields,
-        :color => '#36a64f',
-        :mrkdwn_in => ['fields']
-      }
-    )
   end
 
-  def generate_blockers blockers
-    return if blockers.blank?
+  def generate_attachments description, klass
+    return if description.blank?
 
-    @blocker = Blocker.create(
+    instance_variable_set("@#{klass}", klass.humanize.constantize.create(
       :checkin_id => @checkin.id,
       :user_id => @user.id,
-      :description => blockers
-    )
-  end
-
-  def generate_notes notes
-    return if notes.blank?
-
-    @note = Note.create(
-      :checkin_id => @checkin.id,
-      :user_id => @user.id,
-      :description => notes
-    )
+      :description => description
+    ))
   end
 
   def update_message_timestamp tasks
@@ -159,10 +104,9 @@ class CheckinsController < ApplicationController
     tasks = Task.where :message_timestamp => timestamp
     tasks.destroy_all
 
-    blocker = Blocker.where(:message_timestamp => timestamp).try :destroy_all
-    note = Note.where(:message_timestamp => timestamp).try :destroy_all
-    user_checkin =
-      UserCheckin.where(:message_timestamp => timestamp).try :destroy_all
+    Blocker.where(:message_timestamp => timestamp).try :destroy_all
+    Note.where(:message_timestamp => timestamp).try :destroy_all
+    UserCheckin.where(:message_timestamp => timestamp).try :destroy_all
   end
 
   def generate_task_blockers task, new_task
@@ -210,7 +154,6 @@ class CheckinsController < ApplicationController
 
   def generate_snapshot
     filename = "#{@user.username}_#{@checkin.checkin_date}"
-    save_path = Rails.root.join 'tmp', filename
 
     action_controller_instance = ActionController::Base.new.tap { |controller|
       def controller.params
@@ -236,19 +179,7 @@ class CheckinsController < ApplicationController
 
     original_pdf = File.open(save_path, 'rb').read
 
-    image = Magick::Image::from_blob(original_pdf) do
-      self.format = 'PDF'
-      self.quality = 100
-      self.density = 144
-    end
-    image[0].format = 'JPG'
-    image[0].to_blob
-
-    image[0].trim!.write(save_path)
-
-    s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
-    obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}_#{DateTime.now.strftime('%N')}")
-    obj.upload_file(save_path)
+    obj = generate_image original_pdf, save_path, filename
 
     @user_checkin = UserCheckin.find_or_create_by :user => @user, :checkin => @checkin
     @user_checkin.screenshot_path = obj.public_url
@@ -256,6 +187,23 @@ class CheckinsController < ApplicationController
     @user_checkin.save
 
     send_slack_message
+  end
+
+  def generate_image pdf, save_path, filename
+    image = Magick::Image::from_blob(pdf) do
+      self.format = 'PDF'
+      self.quality = 100
+      self.density = 144
+    end
+    image[0].format = 'JPG'
+    image[0].to_blob
+    image[0].trim!.write save_path
+
+    s3 = Aws::S3::Resource.new(region: ENV['region'], access_key_id: ENV['access_key_id'], secret_access_key: ENV['secret_access_key'])
+    obj = s3.bucket(ENV['bucketname']).object("#{ENV['folder']}/#{filename}_#{DateTime.now.strftime('%N')}")
+    obj.upload_file save_path
+
+    obj
   end
 
   def send_slack_message
@@ -281,7 +229,7 @@ class CheckinsController < ApplicationController
       Note.where :user => @user, :checkin => @checkin
 
     if checkin_tasks_to_override.present?
-      timestamps = checkin_tasks_to_override.map &:message_timestamp
+      timestamps = checkin_tasks_to_override.map(&:message_timestamp)
 
       timestamps.uniq.each do |stamp|
         @message_format = {
