@@ -32,7 +32,7 @@ class V1::UsersController < V1::ApplicationController
 
   def serialize user
     {
-      :pivotal_owner_id => user.pivotal_owner_id,
+      :id => user.pivotal_owner_id,
       :username => user.username,
       :fullname => user.fullname
     }
