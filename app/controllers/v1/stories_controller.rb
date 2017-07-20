@@ -3,9 +3,9 @@ class V1::StoriesController < V1::ApplicationController
   def index
     tasks = Task.all.uniq
 
-    result = tasks.map do |t|
+    result = tasks.where.not(:project_id => 100000).map do |t|
       {
-        :project_id => t.project_id,
+        :project_id => t.project.pivotal_id,
         :owner_id => t.user_id,
         :estimate => t.estimate,
         :title => t.title,
