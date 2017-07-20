@@ -9,7 +9,7 @@ class V1::StoriesController < V1::ApplicationController
         :estimate => t.estimate,
         :title => t.title,
         :days_worked => days_worked(t),
-        :owner_id => t.user_id
+        :owner_id => t.user.pivotal_owner_id
       }
     end
 
