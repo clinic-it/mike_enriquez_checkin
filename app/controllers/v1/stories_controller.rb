@@ -6,10 +6,10 @@ class V1::StoriesController < V1::ApplicationController
     result = tasks.where.not(:project_id => 100000).map do |t|
       {
         :project_id => t.project.pivotal_id,
-        :owner_id => t.user_id,
         :estimate => t.estimate,
         :title => t.title,
-        :days_worked => days_worked(t)
+        :days_worked => days_worked(t),
+        :owner_id => t.user_id
       }
     end
 
