@@ -88,5 +88,6 @@ gem 'slack-ruby-client'
 gem 'figaro'
 gem 'tracker_api'
 gem 'reform-rails'
+gem 'httparty'
 
 ruby '2.2.1'
