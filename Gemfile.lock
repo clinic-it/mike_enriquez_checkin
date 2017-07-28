@@ -164,7 +164,7 @@ GEM
       cocaine (~> 0.5.5)
       mime-types
       mimemagic (~> 0.3.0)
-    pg (0.21.0)
+    pg (0.20.0)
     public_suffix (2.0.5)
     rack (1.6.8)
     rack-test (0.6.3)
@@ -308,7 +308,7 @@ DEPENDENCIES
   jquery-tablesorter
   kaminari
   paperclip (= 5.1.0)
-  pg (~> 0.15)
+  pg (= 0.20)
   rails (= 4.2.6)
   rails-assets-tether (>= 1.3.3)!
   rails_12factor
