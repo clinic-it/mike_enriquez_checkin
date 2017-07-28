@@ -27,7 +27,7 @@ module ApplicationHelper
   end
 
   def project_name_to_id project_name
-    project_name.delete(' ').delete '&'
+    project_name.delete(' ').delete('&').delete '.'
   end
 
 end
