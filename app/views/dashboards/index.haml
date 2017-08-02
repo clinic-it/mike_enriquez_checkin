@@ -6,7 +6,8 @@
           %div{:class => "#{day}"}
             .card-block
               .card-title
-                %h4= "What I did #{day}"
+                - section_text = day == 'today' ? 'What I will do today' : 'What I did yesterday'
+                %h4= section_text
                 %span.ml-auto.align-bottom{:id => "#{day}"} 0 selected
               .project-selection
                 = select_tag :project, options_for_select(@project_hash.keys.sort.reject{|project_name| @project_hash[project_name].count == 0}.map{|project| [project, "##{day}-#{project_name_to_id project}"]}), :prompt => 'Select Project', :class => 'project-select custom-select'
