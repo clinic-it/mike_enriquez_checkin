@@ -1,40 +1,46 @@
 .col-md-12.row
-  .card-deck.col-md-6
+  .card-deck.col-md-8
     .card
       .card-header.text-center Average
       .card-block.row
-        %h3.col= @today.average_load
+        .col.text-center.container-centered-elements
+          %h4= @today.average_load
         .col
           - value = @today.average_load - @yesterday.average_load
-          .col-md-12
-            = icon_tag value
-          .col-md-12
-            = value
+          .col
+            .col-md-12.text-center
+              = icon_tag value
+            .col-md-12
+              = number_with_precision value, :precision => 2
 
     .card
       .card-header.text-center Low
       .card-block.row
-        %h4.col= @today.lowest_load
+        .col.text-center.container-centered-elements
+          %h4= @today.lowest_load
         .col
           - value = @today.lowest_load - @yesterday.lowest_load
-          .col-md-12
-            = icon_tag value
-          .col-md-12
-            = value
+          .col
+            .col-md-12.text-center
+              = icon_tag value
+            .col-md-12
+              = number_with_precision value, :precision => 2
 
 
     .card
       .card-header.text-center High
       .card-block.row
-        %h4.col= @today.highest_load
+        .col.text-center.container-centered-elements
+          %h4= @today.highest_load
         .col
           - value = @today.highest_load - @yesterday.highest_load
-          .col-md-12
-            = icon_tag value
-          .col-md-12
-            = value
+          .col
+            .col-md-12.text-center
+              = icon_tag value
+            .col-md-12
+              = number_with_precision value, :precision => 2
 
-  .col-md-6
+  .col-md-4
     .card
       .card-header.text-center Status
       .card-block.row
