@@ -15,4 +15,12 @@ class UsersController < ApplicationController
 
   end
 
+  def toggle_active
+    user = User.find_by_id params[:id]
+
+    if user && user.toggle!(:active)
+      redirect_to user
+    end
+  end
+
 end

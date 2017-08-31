@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   get 'logout' => 'sessions#destroy'
   get 'dashboard' => 'dashboards#index'
 
+  get 'toggle_user_active' => 'users#toggle_active'
+
   scope '/api' do
     scope :module => :v1, :defaults => {:format => 'json'} do
       resources :projects, :only => [:index, :show]
