@@ -2,6 +2,9 @@
 .card
   .card-header
     %h3.text-center= @user.username
+    .text-center
+      %h6= @user.decorate.active
+      %h7= link_to @user.decorate.toggle_active_text, toggle_user_active_path(:id => @user.id)
     %ul.nav.nav-tabs.card-header-tabs
       %li.nav-item
         %a.card-tabs.nav-link.active{:href => '#active', :data => {:toggle => 'tab'}} Weekly Load
