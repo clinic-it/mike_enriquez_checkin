@@ -54,6 +54,18 @@ class CheckinsController < ApplicationController
     arr.each do |entry|
       project = Project.find_by_pivotal_id entry[0].to_i
 
+      if project.nil?
+        @pivotal = TrackerApi::Client.new :token =>  @user.pivotal_token
+
+        temp_project = @pivotal.project entry[0].to_i
+
+        project =
+          Project.create(
+            :name => temp_project.name,
+            :pivotal_id => entry[0].to_i
+          )
+      end
+
       project_tasks = entry[1]
 
       project_tasks.each do |task|
