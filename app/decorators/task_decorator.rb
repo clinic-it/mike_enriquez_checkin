@@ -11,5 +11,5 @@ class TaskDecorator < ApplicationDecorator
   def to_s
     "[#{self.task_type}][#{self.current_state}][#{self.estimate}]#{self.times_checkedin} #{self.title}"
   end
-  
+
 end

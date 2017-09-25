@@ -23,8 +23,13 @@ class Task < ActiveRecord::Base
     week_start.strftime('%m/%d/%y') + ' - ' + week_end.strftime('%m/%d/%y')
   end
 
-  def times_checked_in_current
-    count = Task.where(:task_id => self.task_id, :current => true).count
+  def times_checked_in_current user_id
+    user = User.find_by_id user
+    count = Task.where(
+      :task_id => self.task_id,
+      :current => true,
+      :user => user
+    ).count
 
     count == 0 ? 1 : count
   end
