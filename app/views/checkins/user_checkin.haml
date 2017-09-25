@@ -42,7 +42,7 @@
                   - task.task_blockers.each do |blocker|
                     %li= blocker.blocker_text
               %td.text-center= estimate
-              %td.text-center= task.times_checked_in_current
+              %td.text-center= task.times_checked_in_current user.id
       %p= "Load: #{tasks_by_current.map{|task| task.estimate ? task.estimate : 0}.inject(0, &:+)}"
 
     - blockers = @checkin.blockers.where(:user => user).first
