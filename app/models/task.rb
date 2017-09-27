@@ -24,11 +24,10 @@ class Task < ActiveRecord::Base
   end
 
   def times_checked_in_current user_id
-    user = User.find_by_id user
     count = Task.where(
       :task_id => self.task_id,
       :current => true,
-      :user => user
+      :user_id => user_id
     ).count
 
     count == 0 ? 1 : count
