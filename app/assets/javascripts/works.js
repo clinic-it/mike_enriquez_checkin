@@ -105,6 +105,12 @@ $(document).ready(function() {
     if ( $('#freshbooks-projects').val() !== '' &&
           $('#freshbooks-tasks').val() !== '' &&
           $('#freshbooks-date').val() !== '' ) {
+
+      var clickedElem = $(this),
+          prevContent = clickedElem.html();
+
+      clickedElem.html('<i class="fa fa-refresh fa-spin"></i>');
+
       $.ajax({
         type: 'post',
         url: '/works/freshbooks_log_hours',
@@ -125,6 +131,7 @@ $(document).ready(function() {
             notes: $('#freshbooks-notes_').val()
           }
 
+          clickedElem.html(prevContent);
           $('#calendar').fullCalendar('renderEvent', newCalendarData);
           $('#freshbooks-hours').val('');
           $('#freshbooks-notes_').val('');
