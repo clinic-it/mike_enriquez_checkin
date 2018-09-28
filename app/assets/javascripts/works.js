@@ -139,6 +139,54 @@ $(document).ready(function() {
     }
   });
 
+  $('#freshbooks-modal').on({
+    'hide.uk.modal': function() {
+      $('#freshbooks-hours').val('');
+      $('#freshbooks-notes_').val('');
+    }
+  });
+
+  $(document).on('click', '.js-log-story', function() {
+    var projectName = $(this).data('project');
+
+    $('#freshbooks-hours').val($(this).data('hours'));
+    $('#freshbooks-notes_').val($(this).data('notes'));
+
+    $('#freshbooks-projects option').each(function(index, element) {
+      $(this).removeAttr('selected');
+
+      if ( compareString(projectName, $(this).text()) ) {
+        $('#freshbooks-projects').val($(this).attr('value'))
+        $('#freshbooks-projects').trigger('change');
+      }
+    });
+
+    $('#freshbooks-tasks').val($(this).data('task'));
+
+    UIkit.modal('#freshbooks-modal').show();
+  });
+
+  $(document).on('click', '.js-state-button', function() {
+    var clickedElem = $(this),
+        prevContent = clickedElem.html();
+
+    clickedElem.html('<i class="fa fa-refresh fa-spin"></i>');
+
+    $.ajax({
+      type: 'put',
+      url: '/works/pivotal_update_state',
+      data: {
+        project_id: $('#pivotal-projects').val(),
+        story_id: $(this).data('id'),
+        new_state: $(this).data('value')
+      },
+      success: function() {
+        clickedElem.html(prevContent);
+        toggleButton(clickedElem);
+      }
+    });
+  });
+
   function populateTable(projectID) {
     var projectName = findPivotalProjectName(projectID);
 
@@ -187,54 +235,6 @@ $(document).ready(function() {
 
     return projectName;
   }
-
-  $('#freshbooks-modal').on({
-    'hide.uk.modal': function() {
-      $('#freshbooks-hours').val('');
-      $('#freshbooks-notes_').val('');
-    }
-  });
-
-  $(document).on('click', '.js-log-story', function() {
-    var projectName = $(this).data('project');
-
-    $('#freshbooks-hours').val($(this).data('hours'));
-    $('#freshbooks-notes_').val($(this).data('notes'));
-
-    $('#freshbooks-projects option').each(function(index, element) {
-      $(this).removeAttr('selected');
-
-      if ( compareString(projectName, $(this).text()) ) {
-        $('#freshbooks-projects').val($(this).attr('value'))
-        $('#freshbooks-projects').trigger('change');
-      }
-    });
-
-    $('#freshbooks-tasks').val($(this).data('task'));
-
-    UIkit.modal('#freshbooks-modal').show();
-  });
-
-  $(document).on('click', '.js-state-button', function() {
-    var clickedElem = $(this),
-        prevContent = clickedElem.html();
-
-    clickedElem.html(`<i class='fa fa-refresh fa-spin'></i>`);
-
-    $.ajax({
-      type: 'put',
-      url: '/works/pivotal_update_state',
-      data: {
-        project_id: $('#pivotal-projects').val(),
-        story_id: $(this).data('id'),
-        new_state: $(this).data('value')
-      },
-      success: function() {
-        clickedElem.html(prevContent);
-        toggleButton(clickedElem);
-      }
-    });
-  });
 
   function compareString(string1, string2) {
     return new RegExp("\\b(" + string1.match(/\w+/g).join('|') + ")\\b", "gi").test(string2);
