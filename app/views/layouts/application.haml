@@ -2,10 +2,15 @@
 %html
   %head
     %title MikeEnriquezCheckin
+    = csrf_meta_tags
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true
     = javascript_include_tag 'application', 'data-turbolinks-track' => true
-    = csrf_meta_tags
+
+    = stylesheet_link_tag 'https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.5/css/uikit.min.css'
+    = javascript_include_tag 'https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.5/js/uikit.min.js'
+    = javascript_include_tag 'https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.5/js/uikit-icons.min.js'
+    = javascript_include_tag 'https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js'
   %body
     = render 'shared/navbar'
-    
+
     = yield

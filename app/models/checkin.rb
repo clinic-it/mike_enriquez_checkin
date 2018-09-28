@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: checkins
+#
+#  id           :integer          not null, primary key
+#  checkin_date :date             not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+
 class Checkin < ActiveRecord::Base
 
   paginates_per 10

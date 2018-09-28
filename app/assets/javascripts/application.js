@@ -11,6 +11,7 @@
 // about supported directives.
 //
 //= require jquery
+//= require jquery-ui
 //= require tether
 //= require bootstrap-sprockets
 //= require jquery-tablesorter
@@ -18,4 +19,7 @@
 //= require turbolinks
 //= require Chart.bundle
 //= require chartkick
+//= require datatables
+//= require moment
+//= require fullcalendar
 //= require_tree .

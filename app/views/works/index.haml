@@ -1,0 +1,24 @@
+.uk-container
+  .uk-card.uk-card-default.uk-card-body{:class => 'uk-width-1-1@m'}
+    %h3.uk-card-title.uk-display-inline
+      Pivotal Projects
+    = button_tag 'Log Hours', :type => 'button', :class => 'uk-button uk-button-default uk-button-small', 'uk-toggle' => 'target: #freshbooks-modal'
+    .uk-float-right
+      Select Project:
+      = select_tag 'pivotal-projects'
+    %hr.uk-divider-icon
+    #pivotal-table-loader.loader
+      .bounce1
+      .bounce2
+      .bounce3
+    .pivotal-project-stories-container
+      %table#pivotal-project-stories.table.table-bordered.uk-table-hover.no-border-spacing
+        %thead
+          %tr
+            %th Estimate
+            %th Title
+            %th State
+            %th Log
+        %tbody
+
+= render :partial => 'freshbooks'
