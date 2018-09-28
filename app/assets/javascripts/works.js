@@ -202,10 +202,10 @@ $(document).ready(function() {
 
       if ( compareString(projectName, $(this).text()) ) {
         $('#freshbooks-projects').val($(this).attr('value'))
-        $('#freshbooks-projects').trigger('change');
       }
     });
 
+    $('#freshbooks-projects').trigger('change');
     $('#freshbooks-tasks').val($(this).data('task'));
 
     UIkit.modal('#freshbooks-modal').show();
