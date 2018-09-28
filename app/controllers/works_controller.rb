@@ -42,17 +42,32 @@ class WorksController < ApplicationController
   end
 
   def freshbooks_log_hours
-    @user.time_entry.create(
-      :time_entry => {
-        :project_id => params[:project_id],
-        :task_id => params[:task_id],
-        :hours => params[:hours],
-        :notes => params[:notes],
-        :date => params[:date]
-      }
-    )
+    if params[:entry_id].present?
+      @user.time_entry.update(
+        :time_entry => {
+          :time_entry_id => params[:entry_id],
+          :project_id => params[:project_id],
+          :task_id => params[:task_id],
+          :hours => params[:hours],
+          :notes => params[:notes],
+          :date => params[:date]
+        }
+      )
 
-    render :nothing => true
+      response = params[:entry_id]
+    else
+      response = @user.time_entry.create(
+        :time_entry => {
+          :project_id => params[:project_id],
+          :task_id => params[:task_id],
+          :hours => params[:hours],
+          :notes => params[:notes],
+          :date => params[:date]
+        }
+      )['time_entry_id']
+    end
+
+    render :json => response
   end
 
   def freshbooks_time_entries_data
@@ -61,12 +76,14 @@ class WorksController < ApplicationController
 
     entries['time_entries']['time_entry'].each do |time_entry|
       object = {
+        :id => time_entry['time_entry_id'],
         :title => time_entry['project_id'],
         :start => Date.strptime(time_entry['date'], '%Y-%m-%d').strftime('%Y-%m-%dT%H:%M:%S+%H:%M'),
         :end => Date.strptime(time_entry['date'], '%Y-%m-%d').strftime('%Y-%m-%dT%H:%M:%S+%H:%M'),
         :task_id => time_entry['task_id'],
         :hours => time_entry['hours'],
-        :notes => time_entry['notes']
+        :notes => time_entry['notes'],
+        :date => time_entry['date']
       }
 
       calendar_data.push(object)

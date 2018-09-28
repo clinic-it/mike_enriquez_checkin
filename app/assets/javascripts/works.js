@@ -2,6 +2,7 @@ $(document).ready(function() {
   var freshbooksProjects,
       freshbooksTasks,
       pivotalProjects,
+      calendarData,
       eventElement,
       table = $('#pivotal-project-stories').DataTable();
 
@@ -10,16 +11,22 @@ $(document).ready(function() {
     populateProject();
 
     $.getJSON('/works/freshbooks_time_entries_data', function(timeEntriesData) {
+      calendarData = timeEntriesData;
+
       $.each(freshbooksProjects.projects.project, function(index, object) {
         $.each(timeEntriesData, function(index2, object2) {
           if ( object.project_id === object2.title ) {
+            if ( typeof object2.project_id === 'undefined' ) {
+              object2.project_id = object2.title;
+            }
+
             object2.title = object.name;
           }
         });
       });
 
       $('#calendar').fullCalendar({
-        events: timeEntriesData,
+        events: calendarData,
         eventLimit: true,
         eventBorderColor: 'transparent',
         eventBackgroundColor: '#3498db',
@@ -36,6 +43,13 @@ $(document).ready(function() {
               calEvent.task_name = object.name;
             }
           });
+
+          $('.js-edit-freshbooks-entry').data('project', calEvent.project_id);
+          $('.js-edit-freshbooks-entry').data('task', calEvent.task_id);
+          $('.js-edit-freshbooks-entry').data('hours', calEvent.hours);
+          $('.js-edit-freshbooks-entry').data('notes', calEvent.notes);
+          $('.js-edit-freshbooks-entry').data('date', calEvent.date);
+          $('.js-edit-freshbooks-entry').data('entry-id', calEvent.id);
 
           $('#event-popup .event-project').html(calEvent.title);
           $('#event-popup .event-task').html(calEvent.task_name);
@@ -81,6 +95,18 @@ $(document).ready(function() {
     }
   });
 
+  $('.js-edit-freshbooks-entry').click(function() {
+    $('#freshbooks-projects').val($(this).data('project'));
+    $('#freshbooks-projects').trigger('change');
+    $('#freshbooks-tasks').val($(this).data('task'));
+    $('#freshbooks-hours').val($(this).data('hours'));
+    $('#freshbooks-notes_').val($(this).data('notes'));
+    $('#freshbooks-date').val($(this).data('date'));
+    $('#freshbooks-time-entry-id').val($(this).data('entry-id'));
+
+    $('.js-freshbooks-log-hours').text('Save Changes');
+  });
+
   $('.js-event-popup-close').click(function() {
     $('#event-popup').hide();
   });
@@ -110,6 +136,7 @@ $(document).ready(function() {
           prevContent = clickedElem.html();
 
       clickedElem.html('<i class="fa fa-refresh fa-spin"></i>');
+      clickedElem.prop('disabled', true);
 
       $.ajax({
         type: 'post',
@@ -119,23 +146,37 @@ $(document).ready(function() {
           task_id: $('#freshbooks-tasks').val(),
           hours: $('#freshbooks-hours').val(),
           notes: $('#freshbooks-notes_').val(),
-          date: $('#freshbooks-date').val()
+          date: $('#freshbooks-date').val(),
+          entry_id: $('#freshbooks-time-entry-id').val()
         },
-        success: function() {
+        success: function(response) {
+          $('#calendar').fullCalendar('removeEvents', response);
+
           var newCalendarData = {
+            id: response,
             title: $('#freshbooks-projects option:selected').text(),
             start: moment($('#freshbooks-date').val()).format(),
             end: moment($('#freshbooks-date').val()).format(),
             task_id: $('#freshbooks-tasks').val(),
             hours: $('#freshbooks-hours').val(),
-            notes: $('#freshbooks-notes_').val()
+            notes: $('#freshbooks-notes_').val(),
+            date: $('#freshbooks-date').val(),
+            project_id: $('#freshbooks-projects').val()
           }
 
-          clickedElem.html(prevContent);
           $('#calendar').fullCalendar('renderEvent', newCalendarData);
+
+
+          $('#freshbooks-time-entry-id').val() === '' ?
+            $.notify('Hours has been logged successfully.', 'success') :
+            $.notify('Entry has been updated successfully.', 'success');
+
+
+          clickedElem.html(prevContent);
+          clickedElem.prop('disabled', false);
           $('#freshbooks-hours').val('');
           $('#freshbooks-notes_').val('');
-          $.notify('Hours has been logged successfully.', 'success');
+          $('#freshbooks-time-entry-id').val('');
         }
       });
     }
@@ -146,8 +187,10 @@ $(document).ready(function() {
 
   $('#freshbooks-modal').on({
     'hide.uk.modal': function() {
+      $('.js-freshbooks-log-hours').text('Log Hours');
       $('#freshbooks-hours').val('');
       $('#freshbooks-notes_').val('');
+      $('#freshbooks-time-entry-id').val('');
     }
   });
 
@@ -176,6 +219,7 @@ $(document).ready(function() {
         prevContent = clickedElem.html();
 
     clickedElem.html('<i class="fa fa-refresh fa-spin"></i>');
+    clickedElem.prop('disabled', true);
 
     $.ajax({
       type: 'put',
@@ -187,6 +231,7 @@ $(document).ready(function() {
       },
       success: function() {
         clickedElem.html(prevContent);
+        clickedElem.prop('disabled', false);
         toggleButton(clickedElem);
       }
     });
@@ -196,10 +241,10 @@ $(document).ready(function() {
     var projectName = findPivotalProjectName(projectID);
 
     $('.pivotal-project-stories-container').hide();
+    $('#pivotal-table-loader').show();
 
     $.getJSON(`/works/pivotal_project_stories_data?project_id=${projectID}`, function(data) {
       table.clear().destroy();
-      $('#pivotal-table-loader').show();
 
       $.each(data, function(index, object) {
         $('#pivotal-project-stories tbody').append(`
@@ -221,10 +266,20 @@ $(document).ready(function() {
       table = $('#pivotal-project-stories').DataTable({
         'autoWidth': false,
         'order': [[2, 'asc']],
-        'columnDefs': [{
-          'targets': 3,
-          'orderable': false
-        }]
+        'columnDefs': [
+          {
+            'targets': 3,
+            'orderable': false
+          },
+          {
+            'targets': 2,
+            'width': '17%',
+          },
+          {
+            'targets': [0, 2, 3],
+            'className': 'uk-text-center'
+          }
+        ]
       });
     });
   }
