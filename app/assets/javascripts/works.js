@@ -3,9 +3,7 @@ $(document).ready(function() {
       freshbooksTasks,
       pivotalProjects,
       eventElement,
-      table = $('#pivotal-project-stories').DataTable({
-        'autoWidth': false
-      });
+      table = $('#pivotal-project-stories').DataTable();
 
   $.getJSON('/works/freshbooks_projects_data', function(data) {
     freshbooksProjects = data;
