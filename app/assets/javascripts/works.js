@@ -2,7 +2,6 @@ $(document).ready(function() {
   var freshbooksProjects,
       freshbooksTasks,
       pivotalProjects,
-      calendarData,
       eventElement,
       table = $('#pivotal-project-stories').DataTable();
 
@@ -11,8 +10,6 @@ $(document).ready(function() {
     populateProject();
 
     $.getJSON('/works/freshbooks_time_entries_data', function(timeEntriesData) {
-      calendarData = timeEntriesData;
-
       $.each(freshbooksProjects.projects.project, function(index, object) {
         $.each(timeEntriesData, function(index2, object2) {
           if ( object.project_id === object2.title ) {
@@ -26,7 +23,7 @@ $(document).ready(function() {
       });
 
       $('#calendar').fullCalendar({
-        events: calendarData,
+        events: timeEntriesData,
         eventLimit: true,
         eventBorderColor: 'transparent',
         eventBackgroundColor: '#3498db',
