@@ -30,6 +30,8 @@ $(document).ready(function() {
         eventTextColor: '#ffffff',
         eventRender: function(event, element) {
           element.find('.fc-time').hide();
+        },
+        eventAfterAllRender: function(view) {
           $('#calendar-loader').hide();
         },
         eventClick: function(calEvent, jsEvent, view) {
