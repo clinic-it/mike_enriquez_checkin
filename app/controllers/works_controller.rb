@@ -5,6 +5,7 @@ class WorksController < ApplicationController
       :freshbooks_projects_data,
       :freshbooks_tasks_data,
       :freshbooks_log_hours,
+      :freshbooks_delete_logged_hours,
       :freshbooks_time_entries_data
     ]
 
@@ -68,6 +69,12 @@ class WorksController < ApplicationController
     end
 
     render :json => response
+  end
+
+  def freshbooks_delete_logged_hours
+    @user.time_entry.delete :time_entry_id => params[:entry_id]
+
+    render :json => params[:entry_id]
   end
 
   def freshbooks_time_entries_data

@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       get :freshbooks_tasks_data
       get :freshbooks_time_entries_data
       post :freshbooks_log_hours
+      post :freshbooks_delete_logged_hours
     end
   end
 

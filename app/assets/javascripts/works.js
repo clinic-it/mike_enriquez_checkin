@@ -49,6 +49,7 @@ $(document).ready(function() {
           $('.js-edit-freshbooks-entry').data('notes', calEvent.notes);
           $('.js-edit-freshbooks-entry').data('date', calEvent.date);
           $('.js-edit-freshbooks-entry').data('entry-id', calEvent.id);
+          $('.js-freshbooks-delete-logged-hours').data('entry-id', calEvent.id);
 
           $('#event-popup .event-project').html(calEvent.title);
           $('#event-popup .event-task').html(calEvent.task_name);
@@ -181,6 +182,27 @@ $(document).ready(function() {
     }
     else {
       $.notify('Please fill out fields with (*).', 'error');
+    }
+  });
+
+  $('.js-freshbooks-delete-logged-hours').click(function() {
+    if ( confirm('Are you sure to delete this time entry?') ) {
+      var clickedElem = $(this);
+
+      clickedElem.html('<i class="fa fa-refresh fa-spin"></i>');
+      $.ajax({
+        type: 'post',
+        url: '/works/freshbooks_delete_logged_hours',
+        data: {
+          entry_id: $(this).data('entry-id')
+        },
+        success: function(response) {
+          $('#event-popup').hide();
+          clickedElem.html('Delete');
+          $('#calendar').fullCalendar('removeEvents', response);
+          $.notify('Time entry has been deleted successfully.', 'success');
+        }
+      });
     }
   });
 
