@@ -1,0 +1,53 @@
+#freshbooks-modal.uk-margin-remove{'uk-modal' => ''}
+  .uk-modal-dialog.uk-modal-body.uk-width-3-4
+    %button.uk-modal-close-default{:type => 'button', 'uk-close' => ''}
+    %p
+      %div{'uk-grid' => ''}
+        %div{:class => 'uk-width-expand@m'}
+          %div.uk-height-1-1.uk-text-center.container-centered-elements
+            #calendar
+            #calendar-loader.loader
+              .bounce1
+              .bounce2
+              .bounce3
+
+        %div{:class => 'uk-width-1-3@m'}
+          %div
+            = hidden_field_tag 'freshbooks-time-entry-id'
+            %p
+              %strong Date: *
+              = text_field_tag 'freshbooks-date', Date.today, :class => 'uk-input'
+            %p
+              %strong Project: *
+              = select_tag 'freshbooks-projects', nil, :class => 'uk-select'
+            %p
+              %strong Task: *
+              = select_tag 'freshbooks-tasks', nil, :class => 'uk-select'
+            %p
+              %strong Hours:
+              = number_field_tag 'freshbooks-hours', nil, :class => 'uk-input'
+            %p
+              %strong Notes:
+              = text_area 'freshbooks-notes', nil, :class => 'uk-textarea'
+            %p.uk-text-center
+              %button.js-freshbooks-log-hours.uk-button.uk-button-primary.uk-button-small{:type => 'button'} Log Hours
+
+#event-popup
+  %span.js-event-popup-close.event-popup-close &times;
+  %span.event-arrow &#9650;
+  %strong Project:
+  %span.event-project
+  %br
+  %strong Task:
+  %span.event-task
+  %br
+  %strong Hours:
+  %span.event-hours
+  %br
+  %strong Notes:
+  %br
+  %span.event-notes
+  %br
+  %button.js-edit-freshbooks-entry.btn.btn-primary.btn-sm Edit
+  %button.js-freshbooks-delete-logged-hours.btn.btn-danger.btn-sm Delete
+

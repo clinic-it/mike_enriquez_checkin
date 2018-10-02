@@ -90,4 +90,11 @@ gem 'tracker_api'
 gem 'reform-rails'
 gem 'httparty'
 
+gem 'jquery-datatables', '1.10.16'
+gem 'ruby-freshbooks', '0.4.1'
+gem 'jquery-ui-rails', '6.0.1'
+gem 'annotate', '2.7.4'
+gem 'momentjs-rails', '2.20.1'
+gem 'fullcalendar-rails', '3.9.0.0'
+
 ruby '2.2.1'
