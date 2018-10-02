@@ -9,9 +9,7 @@ class WorksController < ApplicationController
       :freshbooks_time_entries_data
     ]
 
-  def index
 
-  end
 
   def pivotal_projects_data
     render :json => pivotal_request('https://www.pivotaltracker.com/services/v5/projects', request.method)
