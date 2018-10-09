@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  root 'checkins#new'
+  root 'sessions#new'
 
   resources :checkins
   resources :users, :only => [:show]
@@ -9,11 +9,11 @@ Rails.application.routes.draw do
   get 'summary_checkin' => 'summary#summary_checkin'
   delete 'checkins' => 'checkins#destroy'
 
-  post 'login' => 'sessions#create'
-  get 'logout' => 'sessions#destroy'
   get 'dashboard' => 'dashboards#index'
 
   get 'toggle_user_active' => 'users#toggle_active'
+
+  resources :sessions, :only => [:new, :create, :destroy]
 
   resources :works, :only => [:index] do
     collection do

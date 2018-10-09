@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
-  before_filter :authorize
+  before_action :authorize
 
   def current_user
     @current_user ||= User.find(session[:user_id]) if session[:user_id]
@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_user
 
   def authorize
-    redirect_to :root unless current_user
+    redirect_to root_path unless current_user
   end
 
   def pivotal_request uri, method, params = {}
