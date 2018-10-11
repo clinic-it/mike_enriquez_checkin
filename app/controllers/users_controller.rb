@@ -27,7 +27,9 @@ class UsersController < ApplicationController
 
 
   def edit
-    redirect_to edit_user_path current_user unless @user == current_user
+    unless @user == current_user || current_user.admin
+      redirect_to edit_user_path current_user
+    end
   end
 
 
@@ -62,7 +64,7 @@ class UsersController < ApplicationController
     user = User.find_by_id params[:id]
 
     if user && user.toggle!(:active)
-      redirect_to user
+      redirect_to request.referer
     end
   end
 

@@ -1,5 +1,6 @@
 class WorksController < ApplicationController
 
+  before_action :admin_authorize
   before_action :freshbooks_init,
     :only => [
       :freshbooks_projects_data, :freshbooks_tasks_data, :freshbooks_log_hours,

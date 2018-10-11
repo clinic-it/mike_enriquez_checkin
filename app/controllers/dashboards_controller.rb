@@ -1,6 +1,7 @@
 class DashboardsController < ApplicationController
 
   before_action :init, :only => [:index]
+  before_action :admin_authorize
 
 
   def index
