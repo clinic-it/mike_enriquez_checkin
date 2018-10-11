@@ -41,7 +41,7 @@ class UserForm < Reform::Form
 
     object.upload_file self.image.tempfile
 
-    "https://#{ENV['bucketname']}.s3.amazonaws.com/#{object.key}"
+    object.public_url
   end
 
 end
