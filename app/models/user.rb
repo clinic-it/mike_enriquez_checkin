@@ -16,7 +16,7 @@
 #  freshbooks_task_id :string
 #
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
 
   has_secure_password
 
@@ -24,6 +24,10 @@ class User < ActiveRecord::Base
   has_many :blockers
   has_many :tasks
   has_many :user_checkins
+
+  has_one_attached :image
+
+
 
   def tasks_by_week
     self.tasks.group_by &:week

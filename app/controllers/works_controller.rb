@@ -2,11 +2,8 @@ class WorksController < ApplicationController
 
   before_action :freshbooks_init,
     :only => [
-      :freshbooks_projects_data,
-      :freshbooks_tasks_data,
-      :freshbooks_log_hours,
-      :freshbooks_delete_logged_hours,
-      :freshbooks_time_entries_data
+      :freshbooks_projects_data, :freshbooks_tasks_data, :freshbooks_log_hours,
+      :freshbooks_delete_logged_hours, :freshbooks_time_entries_data
     ]
 
 
@@ -29,7 +26,7 @@ class WorksController < ApplicationController
 
     pivotal_request("https://www.pivotaltracker.com/services/v5/projects/#{params[:project_id]}/stories/#{params[:story_id]}", request.method, request_params)
 
-    render :nothing => true
+    head :ok
   end
 
   def freshbooks_projects_data

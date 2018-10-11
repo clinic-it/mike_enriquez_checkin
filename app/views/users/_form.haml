@@ -1,0 +1,65 @@
+= form_with :model => @user do |f|
+  %h4.uk-heading-line.uk-margin-small
+    %span Personal Information
+  .row
+    .col-md-3.container-centered-elements
+      - if current_user.image.attached? && action_name != 'index'
+        = image_tag current_user.image, :size => '150x150', :class => 'js-image-holder'
+      - else
+        = image_tag 'placeholder.png', :size => '150x150', :class => 'js-image-holder'
+    .col-md-9
+      = f.label :image
+      = f.file_field :image, :class => 'js-image-preview uk-input'
+      %br
+      %br
+      = f.label :fullname
+      = f.text_field :fullname, :class => 'uk-input'
+  %h4.uk-heading-line.uk-margin-small
+    %span Account Information
+  .row
+    .col-md-6
+      = f.label :username
+      = f.text_field :username, :class => 'uk-input'
+    .col-md-6
+      = f.label :password
+      = f.password_field :password, :class => 'uk-input'
+  - if current_user.admin
+    .row.uk-margin-top
+      .col-md-12
+        = f.check_box :admin, :class => 'uk-checkbox'
+        = f.label :admin
+  %h4.uk-heading-line.uk-margin-small
+    %span Pivotal Tracker API Information
+  .row
+    .col-md-6
+      = f.label :pivotal_token
+      = f.text_field :pivotal_token, :class => 'uk-input'
+    .col-md-6
+      = f.label :pivotal_owner_id
+      = f.text_field :pivotal_owner_id, :class => 'uk-input'
+  %h4.uk-heading-line.uk-margin-small
+    %span Freshbooks API Information
+  .row
+    .col-md-6
+      = f.label :freshbooks_token
+      = f.text_field :freshbooks_token, :class => 'uk-input'
+    .col-md-6
+      = f.label :freshbooks_task_id
+      = f.text_field :freshbooks_task_id, :class => 'uk-input'
+  .row.uk-margin-top
+    .col-md-12
+      .uk-float-right
+        = f.submit 'Submit', :class => 'uk-button uk-button-primary', :data => {:disable_with => 'Please wait'}
+
+:javascript
+  $('.js-image-preview').change(function() {
+    if (this.files && this.files[0]) {
+      var reader = new FileReader();
+
+      reader.onload = function(e) {
+        $('.js-image-holder').attr('src', e.target.result);
+      }
+
+      reader.readAsDataURL(this.files[0]);
+    }
+  });

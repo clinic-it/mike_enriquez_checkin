@@ -1,5 +1,14 @@
-.col-md-12
-  - @checkins.each do |date|
-    =link_to date.checkin_date.strftime('%B %d, %Y'), date
-    %br
-  = paginate @checkins
+.uk-container
+  .uk-card.uk-card-default.uk-card-body.uk-padding-small.uk-box-shadow-xlarge.uk-margin-medium-bottom{:class => 'uk-width-1-1@m'}
+    %h3.uk-card-title.uk-display-inline Checkins
+    %hr.uk-divider-icon
+    %table#checkins-table.table.table-bordered.uk-table-hover.no-border-spacing
+      %thead
+        %tr
+          %th ID
+          %th Date
+      %tbody
+        - @checkins.each do |checkin|
+          %tr
+            %td= checkin.id
+            %td= link_to checkin.formatted_date, checkin

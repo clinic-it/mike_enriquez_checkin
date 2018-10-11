@@ -1,8 +1,8 @@
-.uk-container
-  .uk-card.uk-card-default.uk-card-body{:class => 'uk-width-1-1@m'}
+#works-div.uk-container
+  .uk-card.uk-card-default.uk-card-body.uk-padding-small.uk-box-shadow-xlarge.uk-margin-medium-bottom{:class => 'uk-width-1-1@m'}
     %h3.uk-card-title.uk-display-inline
       Pivotal Projects
-    = button_tag 'Log Hours', :type => 'button', :class => 'uk-button uk-button-default uk-button-small', 'uk-toggle' => 'target: #freshbooks-modal'
+    = button_tag 'Log Hours', :type => 'button', :class => 'uk-button uk-button-primary uk-button-small', 'uk-toggle' => 'target: #freshbooks-modal'
     .uk-float-right
       Select Project:
       = select_tag 'pivotal-projects'
@@ -21,4 +21,4 @@
             %th Log
         %tbody
 
-= render :partial => 'freshbooks'
+  = render 'freshbooks'

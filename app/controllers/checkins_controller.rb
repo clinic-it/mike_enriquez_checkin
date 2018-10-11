@@ -5,7 +5,7 @@ class CheckinsController < ApplicationController
 
 
   def index
-    @checkins = Checkin.all.order(:checkin_date => :desc).page params[:page]
+    @checkins = Checkin.all.decorate
   end
 
   def show
@@ -23,7 +23,7 @@ class CheckinsController < ApplicationController
     generate_attachments params[:checkin][:notes], 'note'
 
 
-    redirect_to summary_path
+    redirect_to summary_index_path
   end
 
 

@@ -1,0 +1,9 @@
+- if flash[:notice].present?
+  .uk-alert-success{'uk-alert' => ''}
+    %a.uk-alert-close{'uk-close' => ''}
+    %p= flash[:notice]
+
+- if flash[:error].present?
+  .uk-alert-danger{'uk-alert' => ''}
+    %a.uk-alert-close{'uk-close' => ''}
+    %p= flash[:error].first

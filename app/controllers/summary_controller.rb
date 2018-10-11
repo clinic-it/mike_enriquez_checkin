@@ -2,7 +2,7 @@ class SummaryController < ApplicationController
 
   require 'rmagick'
 
-  def show
+  def index
     @today = Checkin.last
     @yesterday = Checkin.offset(1).last
 

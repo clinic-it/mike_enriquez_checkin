@@ -11,6 +11,7 @@
  * file per style scope.
  *
  *= require_self
+ *= require main
  *= require jquery-ui
  *= require datatables
  *= require fullcalendar
@@ -19,10 +20,5 @@
 
 @import 'bootstrap';
 @import 'font-awesome';
-@import 'shared';
 @import 'summary';
 @import 'dashboard';
-
-body {
-  font-size: 75%;
-}

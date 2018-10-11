@@ -1,7 +1,7 @@
 - if current_user.present?
   %nav.uk-navbar-container.uk-margin.header{'uk-navbar' => ''}
     .uk-navbar-left
-      = link_to dashboard_path, :class => 'uk-navbar-item uk-logo' do
+      = link_to dashboards_path, :class => 'uk-navbar-item uk-logo' do
         %span.uk-margin-small-right{'uk-icon' => 'icon: plus-circle'}
         Mike Enriquez Checkin
     .uk-navbar-right
@@ -13,24 +13,16 @@
           .uk-navbar-dropdown
             %ul.uk-nav.uk-navbar-dropdown-nav
               %li.uk-active
-                = link_to 'Profile', '#'
+                = link_to 'Profile', edit_user_path(current_user)
               %li.uk-nav-divider
               %li.uk-active
                 = link_to 'Sign Out', session_path(current_user), :method => :delete
-
-  %nav.uk-navbar-container.header{'uk-navbar' => ''}
+  %nav.uk-navbar-container.uk-margin-medium-bottom.header{'uk-navbar' => '', 'uk-sticky' => 'bottom: #offset'}
     .uk-navbar-left
       %ul.uk-navbar-nav
         - unless current_user.admin == true
-          %li= link_to 'Dashboard', dashboard_path
-        %li=link_to 'Works', works_path, :data => {:turbolinks => false}
-        %li= link_to 'Daily Summary', summary_path
+          %li= link_to 'Dashboard', dashboards_path
+          %li= link_to 'Works', works_path, :data => {:turbolinks => false}
+        %li= link_to 'Daily Summary', summary_index_path
         %li= link_to 'Index', checkins_path
-        %li
-          %a{:href => '#'}
-            Devs Weekly Load
-            %span.uk-margin-small-left{'uk-icon' => 'icon: triangle-down'}
-          .uk-navbar-dropdown
-            %ul.uk-nav.uk-navbar-dropdown-nav
-              - User.all.each do |user|
-                %li.uk-active= link_to user.username, user
+        %li= link_to 'Users', users_path

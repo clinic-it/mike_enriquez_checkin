@@ -8,7 +8,7 @@
 #  updated_at   :datetime         not null
 #
 
-class Checkin < ActiveRecord::Base
+class Checkin < ApplicationRecord
 
   paginates_per 10
 

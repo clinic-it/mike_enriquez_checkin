@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class Project < ActiveRecord::Base
+class Project < ApplicationRecord
 
   has_many :tasks
 

@@ -1,0 +1,38 @@
+.uk-container
+  .uk-card.uk-card-default.uk-card-body.uk-padding-small.uk-box-shadow-xlarge.uk-margin-medium-bottom{:class => 'uk-width-1-1@m'}
+    = render :partial => 'shared/messages', :locals => {:flash => flash} if flash.present?
+    %h3.uk-card-title.uk-display-inline
+      Users
+    - if current_user.admin
+      = button_tag 'Add New User', :type => 'button', :class => 'uk-button uk-button-primary uk-button-small', 'uk-toggle' => 'target: #new-user-modal'
+      #new-user-modal{'uk-modal' => ''}
+        .uk-modal-dialog.uk-modal-body
+          %button.uk-modal-close-default{:type => 'button', 'uk-close' => ''}
+          %h2.uk-modal-title Add New User
+          %p.uk-text-center
+            = render 'form'
+    %hr.uk-divider-icon
+    %table#users-table.table.table-bordered.uk-table-hover.no-border-spacing
+      %thead
+        %tr
+          %th ID
+          %th Image
+          %th Full Name
+          %th Username
+          %th Status
+      %tbody
+        - users.each do |user|
+          %tr
+            %td= user.id
+            %td.text-center
+              - if user.image.attached?
+                = image_tag user.image, :size => '50x50'
+              - else
+                = image_tag 'placeholder.png', :size => '50x50'
+            %td= link_to user.fullname, user_path(user)
+            %td= user.username
+            %td
+              - if user.active
+                .badge.badge-primary.uk-text-small= user.formatted_active
+              - else
+                .badge.badge-danger.uk-text-small= user.formatted_active

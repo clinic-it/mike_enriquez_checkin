@@ -1,0 +1,6 @@
+.uk-container
+  .uk-card.uk-card-default.uk-card-body.uk-padding-small.uk-box-shadow-xlarge.uk-margin-medium-bottom{:class => 'uk-width-1-1@m'}
+    = render :partial => 'shared/messages', :locals => {:flash => flash} if flash.present?
+    %h3.uk-card-title.uk-display-inline Profile
+    %hr.uk-divider-icon
+    = render 'form'

@@ -1,6 +1,6 @@
 class UserDecorator < ApplicationDecorator
 
-  def active
+  def formatted_active
     object.active ? 'Active' : 'Inactive'
   end
 
