@@ -1,3 +1,3 @@
-$(document).on('turbolinks:load', function() {
+$(document).ready(function() {
   $('#checkins-table').DataTable();
 });

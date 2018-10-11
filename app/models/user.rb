@@ -14,6 +14,7 @@
 #  active             :boolean          default(TRUE)
 #  freshbooks_token   :string
 #  freshbooks_task_id :string
+#  image_url          :string
 #
 
 class User < ApplicationRecord
@@ -24,8 +25,6 @@ class User < ApplicationRecord
   has_many :blockers
   has_many :tasks
   has_many :user_checkins
-
-  has_one_attached :image
 
 
 
