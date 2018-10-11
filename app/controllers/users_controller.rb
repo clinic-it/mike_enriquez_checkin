@@ -28,7 +28,7 @@ class UsersController < ApplicationController
 
   def edit
     unless @user == current_user || current_user.admin
-      redirect_to edit_user_path current_user unless @user == current_user
+      redirect_to edit_user_path current_user
     end
   end
 
