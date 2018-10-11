@@ -11,6 +11,8 @@ class UserForm < Reform::Form
 
 
   def save
+    self.username = self.username.downcase
+
     super
 
     attach_image
