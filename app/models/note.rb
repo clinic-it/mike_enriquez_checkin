@@ -11,9 +11,9 @@
 #  message_timestamp :string
 #
 
-class Note < ActiveRecord::Base
+class Note < ApplicationRecord
 
   belongs_to :checkin
   belongs_to :user
-  
+
 end

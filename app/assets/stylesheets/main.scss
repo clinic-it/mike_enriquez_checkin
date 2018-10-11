@@ -1,0 +1,22 @@
+/*
+ *= require framework_override
+ */
+
+html, body {
+  background: #ecf0f1 !important;
+}
+
+body a {
+  color: #2c3e50;
+}
+
+.turbolinks-progress-bar {
+  height: 3px;
+  background-color: #95a5a6 ;
+}
+
+.header {
+  background-color: #2c3e50 !important;
+  margin: 0 !important;
+  max-height: 3em !important;
+}

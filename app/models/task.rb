@@ -18,7 +18,7 @@
 #  task_id           :integer
 #
 
-class Task < ActiveRecord::Base
+class Task < ApplicationRecord
 
   belongs_to :user
   belongs_to :project

@@ -1,32 +1,28 @@
-.header
-  %nav.navbar.bg-faded.navbar-toggleable-md
-    .navbar-brand= link_to 'Mike Enriquez Checkin', :root
-    - if current_user
-      %ul.nav.navbar-nav
+- if current_user.present?
+  %nav.uk-navbar-container.uk-margin.header{'uk-navbar' => ''}
+    .uk-navbar-left
+      = link_to dashboards_path, :class => 'uk-navbar-item uk-logo' do
+        %span.uk-margin-small-right{'uk-icon' => 'icon: plus-circle'}
+        Mike Enriquez Checkin
+    .uk-navbar-right
+      %ul.uk-navbar-nav
+        %li
+          %a{:href => '#'}
+            = current_user.username
+            %span.uk-margin-small-left{'uk-icon' => 'icon: triangle-down'}
+          .uk-navbar-dropdown
+            %ul.uk-nav.uk-navbar-dropdown-nav
+              %li.uk-active
+                = link_to 'Profile', edit_user_path(current_user)
+              %li.uk-nav-divider
+              %li.uk-active
+                = link_to 'Sign Out', session_path(current_user), :method => :delete
+  %nav.uk-navbar-container.uk-margin-medium-bottom.header{'uk-navbar' => '', 'uk-sticky' => 'bottom: #offset'}
+    .uk-navbar-left
+      %ul.uk-navbar-nav
         - unless current_user.admin == true
-          %li.nav-item
-            .nav-link= link_to 'Dashboard', dashboard_path
-        %li.nav-item
-          .nav-link=link_to 'Works', works_path, :data => {:turbolinks => false}
-        %li.nav-item
-          .nav-link= link_to 'Daily Summary', summary_path
-        %li.nav-item
-          .nav-link= link_to 'Index', checkins_path
-        %li.nav-item.dropdown
-          %a#navbarDropdownMenuLink.nav-link.dropdown-toggle{"data-toggle" => "dropdown", :href => '#'}
-            Devs Weekly Load
-          .dropdown-menu
-            - User.all.each do |user|
-              = link_to user.username, user, :class => 'dropdown-item'
-
-    %ul.nav.navbar-nav.ml-auto
-      - if current_user
-        %li.nav-item
-          .nav-link= User.find_by_id(current_user).username
-        %li.nav-item
-          .nav-link= link_to 'Sign Out', logout_path
-      - else
-        = form_for :session, :url => login_path, :method => :post, :html => {:class => 'form-inline'} do |f|
-          = f.text_field :username, :class => 'form-control'
-          = f.password_field :password, :class => 'form-control'
-          = f.submit 'Sign in', :class => 'btn btn-primary', :data => { :disable_with => 'Please wait' }
+          %li= link_to 'Dashboard', dashboards_path
+          %li= link_to 'Works', works_path, :data => {:turbolinks => false}
+        %li= link_to 'Daily Summary', summary_index_path
+        %li= link_to 'Index', checkins_path
+        %li= link_to 'Users', users_path

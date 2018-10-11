@@ -11,9 +11,9 @@
 #  message_timestamp :string
 #
 
-class Blocker < ActiveRecord::Base
+class Blocker < ApplicationRecord
 
   belongs_to :user
   belongs_to :checkin
-  
+
 end

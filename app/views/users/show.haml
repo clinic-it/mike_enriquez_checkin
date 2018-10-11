@@ -1,21 +1,26 @@
-%br
-.card
-  .card-header
-    %h3.text-center= @user.username
-    .text-center
-      %h6= @user.decorate.active
-      %h7= link_to @user.decorate.toggle_active_text, toggle_user_active_path(:id => @user.id)
-    %ul.nav.nav-tabs.card-header-tabs
-      %li.nav-item
-        %a.card-tabs.nav-link.active{:href => '#active', :data => {:toggle => 'tab'}} Weekly Load
-      %li.nav-item
-        %a.card-tabs.nav-link{:href => '#inactive', :data => {:toggle => 'tab'}} Daily Load
-  .card-block
-    .tab-content
-      #active.tab-pane.fade.in.show.active
-        %h3 Weekly Load
-        = line_chart @current, :xtitle => 'Date', :ytitle => 'Load'
-
-      #inactive.tab-pane.fade.in{:role => 'tabpanel'}
-        %h3= "Daily Load (#{1.month.ago.strftime('%B %d, %Y')} - #{Date.today.strftime('%B %d, %Y')})"
-        = line_chart @current_daily, :xtitle => 'Date', :ytitle => 'Load', :discrete => true
+.uk-container
+  .uk-card.uk-card-default.uk-card-body.uk-padding-small.uk-box-shadow-xlarge.uk-margin-medium-bottom{:class => 'uk-width-1-1@m'}
+    %h3.uk-card-title.uk-display-inline
+      = user.username
+      - if user.active
+        .badge.badge-primary.uk-text-small= user.formatted_active
+      - else
+        .badge.badge-danger.uk-text-small= user.formatted_active
+    .uk-float-right
+      = link_to user.toggle_active_text, toggle_active_users_path(:id => user.id), :class => 'uk-button uk-button-primary uk-button-small'
+    %hr.uk-divider-icon
+    .card
+      .card-header
+        %ul.nav.nav-tabs.card-header-tabs
+          %li.nav-item
+            %a.card-tabs.nav-link.active{:href => '#active', :data => {:toggle => 'tab'}} Weekly Load
+          %li.nav-item
+            %a.card-tabs.nav-link{:href => '#inactive', :data => {:toggle => 'tab'}} Daily Load
+      .card-block
+        .tab-content.uk-padding
+          #active.tab-pane.fade.in.show.active
+            %h3 Weekly Load
+            = line_chart @current, :xtitle => 'Date', :ytitle => 'Load'
+          #inactive.tab-pane.fade.in{:role => 'tabpanel'}
+            %h3= "Daily Load (#{1.month.ago.strftime('%B %d, %Y')} - #{Date.today.strftime('%B %d, %Y')})"
+            = line_chart @current_daily, :xtitle => 'Date', :ytitle => 'Load', :discrete => true

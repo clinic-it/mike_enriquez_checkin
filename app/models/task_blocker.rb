@@ -9,8 +9,8 @@
 #  updated_at   :datetime         not null
 #
 
-class TaskBlocker < ActiveRecord::Base
+class TaskBlocker < ApplicationRecord
 
   belongs_to :task
-  
+
 end

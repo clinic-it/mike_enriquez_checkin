@@ -1,19 +1,24 @@
 Rails.application.routes.draw do
 
-  root 'checkins#new'
+  root 'sessions#new'
 
-  resources :checkins
-  resources :users, :only => [:show]
+  resources :checkins, :only => [:index, :show, :create, :destroy]
 
-  get 'summary' => 'summary#show'
-  get 'summary_checkin' => 'summary#summary_checkin'
-  delete 'checkins' => 'checkins#destroy'
+  resources :users, :only => [:index, :show, :create, :edit, :update] do
+    collection do
+      get :toggle_active
+    end
+  end
 
-  post 'login' => 'sessions#create'
-  get 'logout' => 'sessions#destroy'
-  get 'dashboard' => 'dashboards#index'
+  resources :summary, :only => [:index] do
+    collection do
+      get :summary_checkin
+    end
+  end
 
-  get 'toggle_user_active' => 'users#toggle_active'
+  resources :dashboards, :only => [:index]
+
+  resources :sessions, :only => [:new, :create, :destroy]
 
   resources :works, :only => [:index] do
     collection do
