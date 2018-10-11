@@ -1,4 +1,4 @@
-$(document).on('turbolinks:load', function() {
+$(document).ready(function() {
   if ( $('#works-div').length > 0 ) {
     var freshbooksProjects,
         freshbooksTasks,

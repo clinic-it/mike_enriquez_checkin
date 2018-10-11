@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_11_033831) do
+ActiveRecord::Schema.define(version: 2018_10_11_074934) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -111,6 +111,7 @@ ActiveRecord::Schema.define(version: 2018_10_11_033831) do
     t.boolean "active", default: true
     t.string "freshbooks_token"
     t.string "freshbooks_task_id"
+    t.string "image_url"
   end
 
 end
