@@ -11,7 +11,7 @@ class UserForm < Reform::Form
 
 
   def save
-    self.username = self.username.downcase
+    self.username.downcase!
 
     super
 
