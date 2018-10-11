@@ -13,7 +13,8 @@
 //= require jquery
 //= require jquery-ui
 //= require tether
-//= require bootstrap-sprockets
+//= require popper
+//= require bootstrap
 //= require jquery-tablesorter
 //= require jquery_ujs
 //= require turbolinks
