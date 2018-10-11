@@ -50,16 +50,3 @@
     .col-md-12
       .uk-float-right
         = f.submit 'Submit', :class => 'uk-button uk-button-primary', :data => {:disable_with => 'Please wait'}
-
-:javascript
-  $('.js-image-preview').change(function() {
-    if (this.files && this.files[0]) {
-      var reader = new FileReader();
-
-      reader.onload = function(e) {
-        $('.js-image-holder').attr('src', e.target.result);
-      }
-
-      reader.readAsDataURL(this.files[0]);
-    }
-  });
