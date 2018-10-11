@@ -40,7 +40,8 @@ gem 'bootsnap', '>= 1.1.0', require: false
 
 gem 'jquery-rails', '4.3.3'
 
-gem 'bootstrap', '~> 4.0.0.alpha6'
+gem 'sprockets-rails', '3.2.1'
+gem 'bootstrap', '4.1.3'
 gem 'font-awesome-rails', '4.7.0.4'
 gem 'chartkick', '2.2.4'
 gem 'draper', '3.0.1'
