@@ -1,8 +1,12 @@
-$(document).on('turbolinks:load', function() {
+$(document).ready(function() {
+  var target = [1];
+
+  if ( $('#users-table thead th').length === 6 ) target.push(5);
+
   $('#users-table').DataTable({
     'columnDefs': [
       {
-        'targets': 1,
+        'targets': target,
         'orderable': false
       }
     ]

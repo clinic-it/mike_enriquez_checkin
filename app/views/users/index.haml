@@ -20,6 +20,8 @@
           %th Full Name
           %th Username
           %th Status
+          - if current_user.admin
+            %th Actions
       %tbody
         - users.each do |user|
           %tr
@@ -31,8 +33,18 @@
                 = image_tag 'placeholder.png', :size => '50x50'
             %td= link_to user.fullname, user_path(user)
             %td= user.username
-            %td
+            %td.text-center
               - if user.active
                 .badge.badge-primary.uk-text-small= user.formatted_active
               - else
                 .badge.badge-danger.uk-text-small= user.formatted_active
+            - if current_user.admin
+              %td.text-center
+                = link_to toggle_active_users_path(:id => user.id), :class => 'uk-button uk-button-primary uk-button-small uk-margin-small-right' do
+                  - if user.active
+                    %i{'uk-icon' => 'icon: ban', :title => 'Deactivate', 'data-toggle' => 'tooltip'}
+                  - else
+                    %i{'uk-icon' => 'icon: check', :title => 'Activate', 'data-toggle' => 'tooltip'}
+                = link_to edit_user_path(user), :class => 'uk-button uk-button-primary uk-button-small' do
+                  %i{'uk-icon' => 'icon: pencil', :title => 'Edit User', 'data-toggle' => 'tooltip'}
+
