@@ -28,17 +28,36 @@ class User < ApplicationRecord
 
 
 
+  def self.freshbooks_tasks current_user
+    @user =
+      FreshBooks::Client.new(
+        ENV['freshbooks_url'], current_user.freshbooks_token
+      )
+    tasks = @user.task.list :per_page => 100
+    tasks_data = []
+
+    tasks['tasks']['task'].each do |task|
+      tasks_data.push [task['name'], task['task_id']]
+    end
+
+    tasks_data
+  end
+
+
   def tasks_by_week
     self.tasks.group_by &:week
   end
+
 
   def current_load
     Checkin.last.tasks.current.where(:user => self).sum(:estimate)
   end
 
+
   def previous_load
     Checkin.offset(1).last.tasks.current.where(:user => self).sum(:estimate)
   end
+
 
   def is_admin?
     self.admin

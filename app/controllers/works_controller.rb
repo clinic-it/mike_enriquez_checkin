@@ -100,7 +100,10 @@ class WorksController < ApplicationController
   private
 
   def freshbooks_init
-    @user = FreshBooks::Client.new 'clinicdev.freshbooks.com', current_user.freshbooks_token
+    @user =
+      FreshBooks::Client.new(
+        ENV['freshbooks_url'], current_user.freshbooks_token
+      )
   end
 
 end
