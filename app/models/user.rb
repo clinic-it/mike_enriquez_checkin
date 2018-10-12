@@ -31,7 +31,7 @@ class User < ApplicationRecord
   def self.freshbooks_tasks current_user
     @user =
       FreshBooks::Client.new(
-        'clinicdev.freshbooks.com', current_user.freshbooks_token
+        ENV['freshbooks_url'], current_user.freshbooks_token
       )
     tasks = @user.task.list :per_page => 100
     tasks_data = []
