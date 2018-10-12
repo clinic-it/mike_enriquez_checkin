@@ -45,7 +45,7 @@
       = f.text_field :freshbooks_token, :class => 'uk-input'
     .col-md-6
       = f.label :freshbooks_task_id
-      = f.text_field :freshbooks_task_id, :class => 'uk-input'
+      = f.select :freshbooks_task_id, options_for_select(User.freshbooks_tasks(current_user), @user.freshbooks_task_id), {}, {:class => 'uk-select'}
   .row.uk-margin-top
     .col-md-12
       .uk-float-right
