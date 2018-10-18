@@ -3,8 +3,8 @@
     %span Personal Information
   .row
     .col-md-3.container-centered-elements
-      - if current_user.image_url.present? && action_name != 'index'
-        = image_tag current_user.image_url, :size => '150x150', :class => 'js-image-holder'
+      - if @user.image_url.present? && action_name != 'index'
+        = image_tag @user.image_url, :size => '150x150', :class => 'js-image-holder'
       - else
         = image_tag 'placeholder.png', :size => '150x150', :class => 'js-image-holder'
     .col-md-9

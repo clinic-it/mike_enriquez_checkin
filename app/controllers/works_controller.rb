@@ -10,11 +10,11 @@ class WorksController < ApplicationController
 
 
   def pivotal_projects_data
-    render :json => pivotal_request('https://www.pivotaltracker.com/services/v5/projects', request.method)
+    render :json => PivotalRequest.request('https://www.pivotaltracker.com/services/v5/projects', request.method, current_user.pivotal_token)
   end
 
   def pivotal_project_stories_data
-    stories = pivotal_request("https://www.pivotaltracker.com/services/v5/projects/#{params[:project_id]}/stories?filter=owner:#{current_user.pivotal_owner_id}", request.method)
+    stories = PivotalRequest.request("https://www.pivotaltracker.com/services/v5/projects/#{params[:project_id]}/stories?filter=owner:#{current_user.pivotal_owner_id}", request.method, current_user.pivotal_token)
     stories = JSON.parse(stories).map{|story| story.merge('freshbooks_task_id' => current_user.freshbooks_task_id)}
 
     render :json => stories
@@ -25,7 +25,7 @@ class WorksController < ApplicationController
      'current_state' => params[:new_state]
     }
 
-    pivotal_request("https://www.pivotaltracker.com/services/v5/projects/#{params[:project_id]}/stories/#{params[:story_id]}", request.method, request_params)
+    PivotalRequest.request("https://www.pivotaltracker.com/services/v5/projects/#{params[:project_id]}/stories/#{params[:story_id]}", request.method, current_user.pivotal_token, request_params)
 
     head :ok
   end
