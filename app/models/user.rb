@@ -33,10 +33,8 @@ class User < ApplicationRecord
       FreshBooks::Client.new(
         ENV['freshbooks_url'], current_user.freshbooks_token
       )
-
     tasks = @user.task.list :per_page => 100
     tasks_data = []
-
 
     tasks['tasks']['task'].each do |task|
       tasks_data.push [task['name'], task['task_id']]
