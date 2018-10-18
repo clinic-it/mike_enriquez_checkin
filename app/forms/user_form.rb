@@ -52,7 +52,7 @@ class UserForm < Reform::Form
 
 
   def check_password
-    unless self.password.present?
+    if self.password.blank?
       errors.add :password, ' missing. Please enter the password to continue.'
     end
   end
