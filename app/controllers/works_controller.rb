@@ -18,7 +18,7 @@ class WorksController < ApplicationController
     stories = PivotalRequest.get_project_stories_data current_user, params
     stories =
       JSON.parse(stories).map do |story|
-        story.merge 'freshbooks_task_id' => current_user.freshbooks_task_id
+        story.merge :freshbooks_task_id => current_user.freshbooks_task_id
       end
 
     render :json => stories
