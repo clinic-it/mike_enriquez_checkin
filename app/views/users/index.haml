@@ -40,7 +40,7 @@
                 .badge.badge-danger.uk-text-small= user.formatted_active
             - if current_user.admin
               %td.text-center
-                = link_to toggle_active_users_path(:id => user.id), :class => 'uk-button uk-button-primary uk-button-small uk-margin-small-right' do
+                = link_to toggle_active_users_path(:id => user.id), :class => 'uk-button uk-button-primary uk-button-small uk-margin-small-right', :data => {:turbolinks => false} do
                   - if user.active
                     %i{'uk-icon' => 'icon: ban', :title => 'Deactivate', 'data-toggle' => 'tooltip'}
                   - else

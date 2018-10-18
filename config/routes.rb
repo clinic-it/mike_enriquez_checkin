@@ -33,7 +33,7 @@ Rails.application.routes.draw do
     end
   end
 
-  scope '/api' do
+  scope :api do
     scope :module => :v1, :defaults => {:format => 'json'} do
       resources :projects, :only => [:index, :show]
       resources :users, :only => [:index, :show]
