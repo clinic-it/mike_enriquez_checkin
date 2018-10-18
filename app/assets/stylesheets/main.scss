@@ -20,3 +20,13 @@ body a {
   margin: 0 !important;
   max-height: 3em !important;
 }
+
+@-moz-document url-prefix() {
+  .header .uk-navbar-item {
+    margin-top: -22px;
+  }
+
+  ul.uk-navbar-nav li {
+    margin-top: -22px;
+  }
+}
