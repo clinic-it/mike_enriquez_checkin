@@ -10,7 +10,7 @@ class WorksController < ApplicationController
 
 
   def pivotal_projects_data
-    render :json => PivotalRequest.get_projects_data(current_user)
+    render :json => PivotalRequest.get_projects_data(current_user.pivotal_token)
   end
 
 

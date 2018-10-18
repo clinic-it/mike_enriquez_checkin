@@ -1,10 +1,10 @@
 class PivotalRequest
 
-  def self.get_projects_data current_user
+  def self.get_projects_data pivotal_token
     uri = URI.parse 'https://www.pivotaltracker.com/services/v5/projects'
     request = Net::HTTP::Get.new uri
 
-    request['X-Trackertoken'] = current_user.pivotal_token
+    request['X-Trackertoken'] = pivotal_token
 
     get_response request, uri
   end

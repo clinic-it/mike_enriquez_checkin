@@ -59,12 +59,7 @@ class UserForm < Reform::Form
 
 
   def validate_pivotal_token
-    response =
-      PivotalRequest.request(
-        'https://www.pivotaltracker.com/services/v5/projects',
-        'get',
-        self.pivotal_token
-      )
+    response = PivotalRequest.get_projects_data self.pivotal_token
 
     if response.include? 'invalid_authentication'
       errors.add(
