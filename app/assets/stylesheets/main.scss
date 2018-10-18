@@ -29,4 +29,11 @@ body a {
   ul.uk-navbar-nav li {
     margin-top: -22px;
   }
+
+  li {
+  all: initial;
+    * {
+      all: unset;
+    }
+  }
 }
