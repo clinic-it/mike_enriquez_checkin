@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :summary, :only => [:index] do
     collection do
       get :summary_checkin
+      get :weekly_summary
     end
   end
 

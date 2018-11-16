@@ -25,6 +25,7 @@ class User < ApplicationRecord
   has_many :blockers
   has_many :tasks
   has_many :user_checkins
+  has_many :completed_tasks
 
 
 

@@ -1,0 +1,26 @@
+= stylesheet_link_tag 'https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.5/css/uikit.min.css'
+
+- start_of_the_week = Date.today.at_beginning_of_week
+- end_of_the_week = Date.today + 2.days
+
+%h3 Weekly Summary (#{start_of_the_week.strftime('%m/%d/%Y')} - #{end_of_the_week.strftime('%m/%d/%Y')})
+%hr
+- (start_of_the_week..end_of_the_week).each do |date|
+  %h4= date.strftime '%B %d, %Y - %A'
+  - tasks = CompletedTask.where('DATE(occured) = ?', date).order :user_id
+  - if tasks.present?
+    %table.uk-table.uk-table-divider.uk-text-small
+      %tbody
+        %tr
+          %th Project
+          %th Story
+          %th Estimate
+          %th User
+        - tasks.each do |task|
+          %tr
+            %td= task.project_title
+            %td= task.story_title
+            %td= task.estimate
+            %td= task.user.username
+  - else
+    %span.uk-text-small No records found.

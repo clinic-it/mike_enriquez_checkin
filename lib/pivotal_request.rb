@@ -10,7 +10,7 @@ class PivotalRequest
   end
 
 
-  def self.get_project_stories_data current_user, params
+  def self.get_my_project_stories_data current_user, params
     url =
       'https://www.pivotaltracker.com/services/v5/projects/' \
         "#{params[:project_id]}/stories?filter=owner:" \
@@ -19,6 +19,20 @@ class PivotalRequest
     request = Net::HTTP::Get.new uri
 
     request['X-Trackertoken'] = current_user.pivotal_token
+
+    get_response request, uri
+  end
+
+
+  def self.get_project_stories_data pivotal_owner, pivotal_token, project_id
+    url =
+      'https://www.pivotaltracker.com/services/v5/projects/' \
+        "#{project_id}/stories/?filter=owner:" \
+        "#{pivotal_owner}"
+    uri = URI.parse url
+    request = Net::HTTP::Get.new uri
+
+    request['X-Trackertoken'] = pivotal_token
 
     get_response request, uri
   end
@@ -35,6 +49,19 @@ class PivotalRequest
 
     request.content_type = 'application/json'
     request.body = JSON.dump request_params
+
+    get_response request, uri
+  end
+
+
+  def self.get_story_transitions pivotal_token, project_id, story_id
+    url =
+      'https://www.pivotaltracker.com/services/v5/projects/' \
+        "#{project_id}/stories/#{story_id}/transitions"
+    uri = URI.parse url
+    request = Net::HTTP::Get.new uri
+
+    request['X-Trackertoken'] = pivotal_token
 
     get_response request, uri
   end
