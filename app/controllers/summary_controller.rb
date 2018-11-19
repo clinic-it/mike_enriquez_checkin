@@ -37,6 +37,11 @@ class SummaryController < ApplicationController
         send_file Rails.root.join('tmp', "#{@checkin.checkin_date.to_s}.jpg"), type: "image/gif", disposition: "inline"
       }
     end
-
   end
+
+
+  def weekly_summary
+    render :pdf => 'Weekly Summary'
+  end
+
 end
