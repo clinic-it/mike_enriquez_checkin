@@ -21,6 +21,8 @@ task :send_weekly_summary => :environment do
         :date_to => END_OF_THE_WEEK
       )
 
+    next if entries.to_s.include? 'Authentication failed'
+
     entries['time_entries']['time_entry'].each do |time_entry|
       project = current_user.project.get :project_id => time_entry['project_id']
       object = {
