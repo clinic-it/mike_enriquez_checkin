@@ -3,20 +3,20 @@
 %hr
 - (@start_of_the_week..@end_of_the_week).each do |date|
   %h4= date.strftime '%B %d, %Y - %A'
-  - tasks = @tasks_completed.select { |key| key if key[:date] == date.to_s }
+  - tasks = @tasks_completed.select { |key| key if key.date == date.to_s }
   - if tasks.present?
     %table.uk-table.uk-table-divider.uk-text-small
       %tbody
         %tr
           %th Project
           %th Notes
-          %th Estimate
+          %th Hours
           %th User
         - tasks.each do |task|
           %tr
-            %td= task[:project]
-            %td= task[:notes]
-            %td= task[:hours]
-            %td= task[:username]
+            %td= task.project
+            %td= task.notes
+            %td= task.hours
+            %td= task.username
   - else
     %span.uk-text-small No records found.
