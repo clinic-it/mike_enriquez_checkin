@@ -22,6 +22,12 @@ task :send_weekly_summary => :environment do
       )
 
     next if entries.to_s.include? 'Authentication failed'
+    next if entries['time_entries']['total'] == '0'
+
+    unless entries['time_entries']['time_entry'].is_a? Array
+      entries['time_entries']['time_entry'] =
+        [entries['time_entries']['time_entry']]
+    end
 
     entries['time_entries']['time_entry'].each do |time_entry|
       project = current_user.project.get :project_id => time_entry['project_id']
