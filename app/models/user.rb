@@ -26,6 +26,8 @@ class User < ApplicationRecord
   has_many :tasks
   has_many :user_checkins
 
+  scope :active, -> { where :active => true }
+
 
 
   def self.freshbooks_tasks current_user
