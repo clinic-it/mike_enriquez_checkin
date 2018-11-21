@@ -1,6 +1,8 @@
 task :send_weekly_summary => :environment do
 
-  next unless Date.today.strftime('%A') == 'Tuesday'
+  PH_TIME_ZONE = 8.hours
+
+  next unless (Time.now + PH_TIME_ZONE).strftime('%A') == 'Wednesday'
 
   tasks_completed = []
 
