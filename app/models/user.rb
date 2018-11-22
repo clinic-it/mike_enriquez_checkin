@@ -38,8 +38,10 @@ class User < ApplicationRecord
     tasks = @user.task.list :per_page => 100
     tasks_data = []
 
-    tasks['tasks']['task'].each do |task|
-      tasks_data.push [task['name'], task['task_id']]
+    unless tasks.to_s.include? 'Authentication failed'
+      tasks['tasks']['task'].each do |task|
+        tasks_data.push [task['name'], task['task_id']]
+      end
     end
 
     tasks_data
