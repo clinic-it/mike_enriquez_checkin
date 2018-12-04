@@ -1,6 +1,6 @@
 class ApplicationMailer < ActionMailer::Base
 
-  default :from => ENV['gmail_email']
+  default :from => 'noreply@mikeenriquezcheckin.herokuapp.com'
 
   layout 'mailer'
 
