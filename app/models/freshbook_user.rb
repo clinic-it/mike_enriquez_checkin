@@ -2,8 +2,9 @@ class FreshbookUser
 
   attr_reader :user
 
-  START_OF_THE_WEEK = Date.today.at_beginning_of_week.strftime '%Y-%m-%d'
-  END_OF_THE_WEEK = Date.tomorrow.strftime '%Y-%m-%d'
+  FRIDAY_LAST_WEEK = Date.today - 7.days
+  START_OF_THE_WEEK = FRIDAY_LAST_WEEK.strftime '%Y-%m-%d'
+  END_OF_THE_WEEK = Date.yesterday.strftime '%Y-%m-%d'
 
 
 
